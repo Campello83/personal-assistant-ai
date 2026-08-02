@@ -116,12 +116,10 @@ function formatarTarefa(tarefa) {
   const concluida = tarefa.status === "completed";
   if (concluida) return "~" + tarefa.title + "~";
 
-  const horario = obterHorarioTarefa(tarefa.id);
+  const vencimento = obterVencimentoTarefa(tarefa.id);
   let atrasada = false;
 
-  if (horario && tarefa.due) {
-    const dataBase = Utilities.formatDate(new Date(tarefa.due), "GMT-3", "yyyy-MM-dd");
-    const vencimento = new Date(dataBase + "T" + horario + ":00-03:00");
+  if (vencimento) {
     atrasada = new Date() > vencimento;
   } else if (tarefa.due) {
     const dataDue = Utilities.formatDate(new Date(tarefa.due), "GMT-3", "yyyy-MM-dd");
@@ -195,16 +193,15 @@ function verificarTarefasComHorario() {
   const tarefas = listarTarefasDoDia().filter(function (t) { return t.status !== "completed" && !!obterHorarioTarefa(t.id); });
 
   tarefas.forEach(function (tarefa) {
-    const horario = obterHorarioTarefa(tarefa.id);
-    const dataBase = Utilities.formatDate(new Date(tarefa.due), "GMT-3", "yyyy-MM-dd");
-    const vencimento = new Date(dataBase + "T" + horario + ":00-03:00");
+    const vencimento = obterVencimentoTarefa(tarefa.id);
+    if (!vencimento) return;
 
     const chave1h = "TAREFA_1H_" + tarefa.id;
     const chaveVencimento = "TAREFA_VENC_" + tarefa.id;
     const chaveSeguimento = "TAREFA_SEG_" + tarefa.id;
 
     if (!buscarEstado(chave1h) && agora >= new Date(vencimento.getTime() - 60 * 60000) && agora < vencimento) {
-      enviarMensagemWhatsApp(obterNumeroUsuario(), "Lembrete: \"" + tarefa.title + "\" vence em 1h (" + horario + ").");
+      enviarMensagemWhatsApp(obterNumeroUsuario(), "Lembrete: \"" + tarefa.title + "\" vence em 1h (" + Utilities.formatDate(vencimento, "GMT-3", "HH:mm") + ").");
       salvarEstado(chave1h, "", "", false, true, tarefa.title);
     }
 

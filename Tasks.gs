@@ -14,31 +14,49 @@ function obterListaTarefas() {
   return listaId;
 }
 
-// O Google Tasks nao suporta horario (so data) no campo "due".
-// Por isso guardamos o horario desejado numa aba propria da planilha.
+// O Google Tasks nao suporta horario (so data) e o campo "due" tem uma
+// armadilha de fuso horario (grava meia-noite UTC, que ao converter para
+// GMT-3 "recua" um dia). Por isso guardamos data E horario como texto puro
+// numa aba propria, sem nenhuma conversao de fuso.
 
 function obterAbaHorarios() {
   const planilha = SpreadsheetApp.getActiveSpreadsheet();
   let aba = planilha.getSheetByName("Tarefas_Horario");
   if (!aba) {
     aba = planilha.insertSheet("Tarefas_Horario");
-    aba.appendRow(["TaskID", "Horario"]);
+    aba.appendRow(["TaskID", "DataPrazo", "Horario"]);
   }
   return aba;
 }
 
-function salvarHorarioTarefa(taskId, horario) {
+function salvarHorarioTarefa(taskId, dataPrazo, horario) {
   const aba = obterAbaHorarios();
-  aba.appendRow([taskId, horario]);
+  aba.appendRow([taskId, dataPrazo, horario]);
 }
 
 function obterHorarioTarefa(taskId) {
   const aba = obterAbaHorarios();
   const linhas = aba.getDataRange().getValues();
   for (let i = 1; i < linhas.length; i++) {
+    if (linhas[i][0] === taskId) return linhas[i][2];
+  }
+  return null;
+}
+
+function obterDataPrazoTarefa(taskId) {
+  const aba = obterAbaHorarios();
+  const linhas = aba.getDataRange().getValues();
+  for (let i = 1; i < linhas.length; i++) {
     if (linhas[i][0] === taskId) return linhas[i][1];
   }
   return null;
+}
+
+function obterVencimentoTarefa(taskId) {
+  const data = obterDataPrazoTarefa(taskId);
+  const hora = obterHorarioTarefa(taskId);
+  if (!data || !hora) return null;
+  return new Date(data + "T" + hora + ":00-03:00");
 }
 
 function criarTarefa(dados) {
@@ -55,8 +73,8 @@ function criarTarefa(dados) {
 
   const tarefaCriada = Tasks.Tasks.insert(tarefa, listaId);
 
-  if (dados.hora) {
-    salvarHorarioTarefa(tarefaCriada.id, dados.hora);
+  if (dados.hora && dados.prazo) {
+    salvarHorarioTarefa(tarefaCriada.id, dados.prazo, dados.hora);
   }
 
   return {
