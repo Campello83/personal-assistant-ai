@@ -21,9 +21,12 @@ jobs:
         run: npm install -g @google/clasp
 
       - name: Criar arquivos de autenticacao
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          CLASP_JSON: ${{ secrets.CLASP_JSON }}
         run: |
-          echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
-          echo '${{ secrets.CLASP_JSON }}' > .clasp.json
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+          printf '%s' "$CLASP_JSON" > .clasp.json
 
       - name: Enviar codigo para o Apps Script
         run: clasp push --force
