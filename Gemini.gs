@@ -12,8 +12,8 @@ function interpretarMensagem(texto, audioBase64, mimeType) {
     '  "dados": { ... }\n' +
     '}\n\n' +
     'Campos esperados por intent:\n' +
-    '- agendar_compromisso: titulo, data (YYYY-MM-DD), hora (HH:MM), duracao_minutos\n' +
-    '- criar_tarefa: titulo, prazo (YYYY-MM-DD ou null)\n' +
+    '- agendar_compromisso: titulo, data (YYYY-MM-DD), hora (HH:MM), duracao_minutos, reuniao_online (true SOMENTE se a mensagem citar explicitamente "reuniao online" ou "reunião online")\n' +
+    '- criar_tarefa: titulo, prazo (YYYY-MM-DD ou null), hora (HH:MM ou null - so preencher se a mensagem citar um horario especifico)\n' +
     '- registrar_gasto: descricao, valor (numero), categoria\n' +
     '- registrar_entrada: descricao, valor (numero), categoria\n' +
     '- registrar_anotacao: titulo, conteudo\n' +

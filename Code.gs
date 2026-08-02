@@ -15,6 +15,14 @@ function doGet(e) {
   return ContentService.createTextOutput("Erro de verificacao");
 }
 
+function jaProcessada(mensagemId) {
+  const cache = CacheService.getScriptCache();
+  if (!mensagemId) return false;
+  if (cache.get(mensagemId)) return true;
+  cache.put(mensagemId, "1", 21600); // 6 horas
+  return false;
+}
+
 function doPost(e) {
   try {
     const dados = JSON.parse(e.postData.contents);
@@ -26,26 +34,43 @@ function doPost(e) {
     if (mensagens && mensagens.length > 0) {
       const msg = mensagens[0];
       const numero = msg.from;
-      let resultado;
+
+      if (jaProcessada(msg.id)) {
+        registrarLog("SISTEMA", numero, "Mensagem duplicada ignorada (retry da Meta): " + msg.id, "IGNORADO");
+        return ContentService.createTextOutput(JSON.stringify({ status: "duplicada" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
 
       if (msg.type === "text") {
         const texto = msg.text.body;
         registrarLog("MENSAGEM_RECEBIDA", numero, texto, "OK");
-        resultado = interpretarMensagem(texto, null, null);
+
+        const pendente = obterPendente();
+        if (pendente) {
+          const respostaLembrete = interpretarRespostaLembrete(texto);
+          if (respostaLembrete.relacionado) {
+            processarRespostaLembrete(pendente, respostaLembrete, numero);
+            return ContentService.createTextOutput(JSON.stringify({ status: "recebido" }))
+              .setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+
+        const resultado = interpretarMensagem(texto, null, null);
+        registrarLog("INTERPRETACAO", numero, JSON.stringify(resultado), "OK");
+        processarIntent(resultado, numero);
 
       } else if (msg.type === "audio") {
         const audioInfo = baixarMidiaWhatsApp(msg.audio.id);
         registrarLog("MENSAGEM_RECEBIDA", numero, "[audio recebido]", "OK");
-        resultado = interpretarMensagem(null, audioInfo.base64, audioInfo.mimeType);
+        const resultado = interpretarMensagem(null, audioInfo.base64, audioInfo.mimeType);
+        registrarLog("INTERPRETACAO", numero, JSON.stringify(resultado), "OK");
+        processarIntent(resultado, numero);
 
       } else {
         registrarLog("SISTEMA", numero, "Tipo nao suportado: " + msg.type, "IGNORADO");
         return ContentService.createTextOutput(JSON.stringify({ status: "ignorado" }))
           .setMimeType(ContentService.MimeType.JSON);
       }
-
-      registrarLog("INTERPRETACAO", numero, JSON.stringify(resultado), "OK");
-      processarIntent(resultado, numero);
 
     } else if (valor && valor.statuses) {
       return ContentService.createTextOutput(JSON.stringify({ status: "status_entrega" }))
@@ -71,12 +96,16 @@ function processarIntent(resultado, numero) {
 
   if (intent === "agendar_compromisso") {
     const evento = criarCompromisso(dados);
-    enviarMensagemWhatsApp(numero, "Compromisso agendado:\n" + evento.titulo + "\n" + evento.inicio + " as " + evento.fim);
+    let mensagem = "Compromisso agendado:\n" + evento.titulo + "\n" + evento.inicio + " as " + evento.fim;
+    if (evento.linkReuniao) mensagem += "\nLink da reuniao: " + evento.linkReuniao;
+    enviarMensagemWhatsApp(numero, mensagem);
     registrarLog("AGENDA", numero, JSON.stringify(evento), "OK");
 
   } else if (intent === "criar_tarefa") {
     const tarefa = criarTarefa(dados);
-    enviarMensagemWhatsApp(numero, "Tarefa criada:\n" + tarefa.titulo + "\nPrazo: " + tarefa.prazo);
+    let mensagem = "Tarefa criada:\n" + tarefa.titulo + "\nPrazo: " + tarefa.prazo;
+    if (tarefa.hora) mensagem += " as " + tarefa.hora;
+    enviarMensagemWhatsApp(numero, mensagem);
     registrarLog("TAREFA", numero, JSON.stringify(tarefa), "OK");
 
   } else if (intent === "registrar_gasto") {
@@ -95,15 +124,13 @@ function processarIntent(resultado, numero) {
       "Entradas: R$ " + resumo.totalEntradas.toFixed(2) + "\n" +
       "Gastos: R$ " + resumo.totalGastos.toFixed(2) + "\n" +
       "Saldo: R$ " + resumo.saldo.toFixed(2);
-
     const categorias = Object.keys(resumo.gastosPorCategoria);
     if (categorias.length > 0) {
       mensagem += "\n\nGastos por categoria:";
-      categorias.forEach(function(cat) {
+      categorias.forEach(function (cat) {
         mensagem += "\n- " + cat + ": R$ " + resumo.gastosPorCategoria[cat].toFixed(2);
       });
     }
-
     enviarMensagemWhatsApp(numero, mensagem);
     registrarLog("FINANCEIRO", numero, JSON.stringify(resumo), "OK");
 

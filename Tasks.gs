@@ -14,6 +14,33 @@ function obterListaTarefas() {
   return listaId;
 }
 
+// O Google Tasks nao suporta horario (so data) no campo "due".
+// Por isso guardamos o horario desejado numa aba propria da planilha.
+
+function obterAbaHorarios() {
+  const planilha = SpreadsheetApp.getActiveSpreadsheet();
+  let aba = planilha.getSheetByName("Tarefas_Horario");
+  if (!aba) {
+    aba = planilha.insertSheet("Tarefas_Horario");
+    aba.appendRow(["TaskID", "Horario"]);
+  }
+  return aba;
+}
+
+function salvarHorarioTarefa(taskId, horario) {
+  const aba = obterAbaHorarios();
+  aba.appendRow([taskId, horario]);
+}
+
+function obterHorarioTarefa(taskId) {
+  const aba = obterAbaHorarios();
+  const linhas = aba.getDataRange().getValues();
+  for (let i = 1; i < linhas.length; i++) {
+    if (linhas[i][0] === taskId) return linhas[i][1];
+  }
+  return null;
+}
+
 function criarTarefa(dados) {
   const listaId = obterListaTarefas();
 
@@ -28,9 +55,14 @@ function criarTarefa(dados) {
 
   const tarefaCriada = Tasks.Tasks.insert(tarefa, listaId);
 
+  if (dados.hora) {
+    salvarHorarioTarefa(tarefaCriada.id, dados.hora);
+  }
+
   return {
     sucesso: true,
     titulo: tarefaCriada.title,
-    prazo: dados.prazo || "sem prazo definido"
+    prazo: dados.prazo || "sem prazo definido",
+    hora: dados.hora || null
   };
 }

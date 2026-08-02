@@ -22,6 +22,19 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.6.0] - 2026-08-02
+### Adicionado
+- Lembretes automáticos de agenda: aviso 1h antes de compromissos (próprios ou aceitos de convites), com link do Google Meet quando a mensagem citar "reunião online".
+- Lembretes automáticos de tarefas: checklist diário às 8h, lembrete a cada 2h para tarefas sem horário (ajustável por resposta do usuário), lembrete 1h antes e cobrança de conclusão para tarefas com horário definido.
+- Formatação de tarefas no WhatsApp: concluída (~riscado~), em atraso (_itálico_).
+- Arquivo `Lembretes.gs` e gatilho automático (`verificarLembretes`, a cada 15 minutos).
+- Aba `Lembretes_Estado` e `Tarefas_Horario` na planilha.
+- Automação dos commits no GitHub feita diretamente pelo assistente (Claude), via terminal com acesso ao repositório.
+
+### Corrigido
+- Mensagens duplicadas (reenvio automático da Meta) causando compromissos e tarefas duplicados — implementado controle de deduplicação por ID da mensagem (`CacheService`).
+- Horário de tarefas exibido incorretamente — Google Tasks não suporta horário nativamente; horário agora é guardado numa aba própria da planilha.
+
 ## [0.4.0] - 2026-08-02
 ### Adicionado
 - Gerenciamento do Google Tasks: intent `criar_tarefa` cria tarefas numa lista dedicada ("Personal Assistant AI"), com confirmação por WhatsApp.
