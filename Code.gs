@@ -76,6 +76,12 @@ function processarIntent(resultado, numero) {
     enviarMensagemWhatsApp(numero, mensagem);
     registrarLog("AGENDA", numero, JSON.stringify(evento), "OK");
 
+  } else if (intent === "criar_tarefa") {
+    const tarefa = criarTarefa(dados);
+    const mensagem = "Tarefa criada:\n" + tarefa.titulo + "\nPrazo: " + tarefa.prazo;
+    enviarMensagemWhatsApp(numero, mensagem);
+    registrarLog("TAREFA", numero, JSON.stringify(tarefa), "OK");
+
   } else {
     enviarMensagemWhatsApp(numero, "Recebi sua mensagem, mas essa funcao ainda esta em construcao.");
     registrarLog("SISTEMA", numero, "Intent ainda nao implementado: " + intent, "IGNORADO");
