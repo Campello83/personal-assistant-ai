@@ -98,3 +98,126 @@ Esta seção guarda mudanças de arquitetura, planejamento ou ferramentas ao lon
 - Alternativas de teste sem depender do WhatsApp real: botão **"Testar"** ao lado do campo `messages` no painel de Webhook da Meta, ou uma requisição `POST` simulando o payload via Postman.
 
 ✅ **Critério de conclusão da Etapa 1:** mensagem de teste aparece registrada na planilha.
+
+---
+
+## Etapa 2 — Interpretação com Gemini (texto e áudio → JSON)
+
+**Objetivo desta etapa:** transformar a mensagem recebida (texto ou áudio) em um JSON estruturado dizendo o que o usuário quer fazer.
+
+**Decisão de arquitetura:** áudio é enviado direto ao Gemini (que transcreve e interpreta numa única chamada), em vez de transcrever separadamente. Isso reduz pela metade o consumo da cota gratuita.
+
+### 2.1 — Gerar a chave de API do Gemini
+
+1. Acesse [aistudio.google.com](https://aistudio.google.com/) e faça login.
+2. Menu esquerdo → **"Get API key"** → **"Create API key"** → **"Create API key in new project"**.
+3. Copie a chave gerada.
+
+### 2.2 — Guardar credenciais no Apps Script
+
+1. No editor do Apps Script → engrenagem ⚙️ **"Configurações do projeto"** → **"Propriedades do script"** → **"Adicionar propriedade do script"**.
+2. Adicione:
+   - `GEMINI_API_KEY` → a chave da Etapa 2.1
+   - `WHATSAPP_TOKEN` → o token de acesso da Meta (Etapa 1.2)
+3. Salve.
+
+### 2.3 — Criar `Gemini.gs`
+
+Cria a função `interpretarMensagem(texto, audioBase64, mimeType)`, que monta um prompt de instrução (definindo o formato do JSON de saída e os `intents` possíveis: `agendar_compromisso`, `criar_tarefa`, `registrar_gasto`, `registrar_anotacao`, `gerar_relatorio`, `controle_financeiro`, `lembrete`, `desconhecido`) e chama a API do Gemini via `UrlFetchApp.fetch`.
+
+⚠️ **Nota de manutenção:** o Google descontinua modelos do Gemini periodicamente. Se aparecer erro `404 - model is no longer available`, é só trocar o nome do modelo na URL da chamada pelo modelo atual recomendado (checar `ai.google.dev`). Modelo em uso atualmente: `gemini-3.5-flash-lite` (mais econômico da geração atual).
+
+### 2.4 — Criar `WhatsApp.gs`
+
+Cria a função `baixarMidiaWhatsApp(mediaId)`, que busca a URL do arquivo de áudio na Meta e devolve o conteúdo em base64, pronto para enviar ao Gemini.
+
+### 2.5 — Atualizar `Code.gs`
+
+O `doPost` passa a identificar o tipo da mensagem (`text` ou `audio`), chamar `interpretarMensagem` com os dados corretos, e registrar o resultado (JSON) na planilha com o tipo `INTERPRETACAO`.
+
+### 2.6 — Reautorizar permissões
+
+Como passamos a usar `UrlFetchApp.fetch` para serviços externos, é necessária uma nova autorização do script (permissão `script.external_request`). Método: criar uma função temporária que chama `UrlFetchApp.fetch("https://www.google.com")`, executá-la manualmente pelo editor, aceitar a tela de permissões, depois apagar a função.
+
+### 2.7 — Reimplantar
+
+Toda vez que o código de qualquer arquivo `.gs` muda, é necessário gerar uma **nova versão** da implantação (Implantar → Gerenciar implantações → editar → "Nova versão" → preencher descrição → Implantar). A URL do Web App não muda.
+
+### 2.8 — Teste funcional
+
+Envie uma mensagem de texto e depois um áudio pelo WhatsApp, cada um pedindo uma ação diferente (ex: agendar um compromisso, registrar um gasto). Confirme na aba **Logs** que aparece uma linha `INTERPRETACAO` com um JSON coerente para cada uma.
+
+⚠️ **Problema comum:** se o áudio não gerar nenhum registro (nem na planilha, nem em Execuções do Apps Script), veja a nota sobre inscrição do app na WABA (`subscribed_apps`) na Etapa 1.6 — é a causa mais provável.
+
+✅ **Critério de conclusão da Etapa 2:** texto e áudio geram um JSON de interpretação coerente na planilha.
+
+---
+
+## Etapa 3 — Gerenciamento da Agenda (Google Calendar)
+
+**Objetivo desta etapa:** transformar o intent `agendar_compromisso` num evento real no Google Calendar, com confirmação automática por WhatsApp.
+
+**Decisões desta etapa:**
+- Agenda usada: a agenda principal da conta Google do usuário.
+- O assistente sempre confirma por WhatsApp após criar o compromisso.
+- Edição de compromisso por referência (ex: "altera essa reunião") foi avaliada e **adiada para a Etapa 10** (sistema de memória do assistente) — hoje cada mensagem é interpretada isoladamente, sem contexto do que foi dito antes.
+
+### 3.1 — Adicionar propriedade de envio
+
+Adicionar a propriedade `WHATSAPP_PHONE_NUMBER_ID` nas Propriedades do Script (o mesmo Phone Number ID da Etapa 1.2) — necessário para o assistente conseguir **enviar** mensagens, não só receber.
+
+### 3.2 — Criar `Agenda.gs`
+
+Cria a função `criarCompromisso(dados)`, que usa `CalendarApp.getDefaultCalendar()` para criar o evento com título, data/hora de início e duração (padrão: 60 minutos se não especificado).
+
+### 3.3 — Atualizar `WhatsApp.gs`
+
+Adiciona a função `enviarMensagemWhatsApp(numeroDestino, texto)`, que envia mensagens de texto via API da Meta (`POST /{PHONE_NUMBER_ID}/messages`).
+
+### 3.4 — Atualizar `Code.gs`
+
+Cria a função `processarIntent(resultado, numero)`, chamada após a interpretação do Gemini — hoje trata o intent `agendar_compromisso` (cria o evento e confirma por WhatsApp) e responde com mensagem genérica para intents ainda não implementados.
+
+**Melhoria aplicada:** o `doPost` passou a identificar e ignorar silenciosamente (sem gerar log) as notificações de status de entrega que a própria Meta envia de volta (enviado/entregue/lido) após cada mensagem enviada pelo assistente — evita poluir a planilha de Logs.
+
+### 3.5 — Reautorizar permissões (Calendar)
+
+Mesmo processo da Etapa 2.6, mas chamando `CalendarApp.getDefaultCalendar()` na função temporária de autorização.
+
+### 3.6 — Reimplantar e testar
+
+Nova versão da implantação → enviar mensagem tipo "Marca uma reunião com o cliente amanhã às 15h" → confirmar: (1) resposta de confirmação no WhatsApp, (2) evento aparece no Google Calendar, (3) linha `AGENDA` na planilha com status `OK`.
+
+✅ **Critério de conclusão da Etapa 3:** compromisso criado no Calendar + confirmação por WhatsApp + log limpo (sem ruído de status de entrega).
+
+---
+
+## Etapa 4 — Gerenciamento do Google Tasks
+
+**Objetivo desta etapa:** transformar o intent `criar_tarefa` numa tarefa real no Google Tasks, com confirmação por WhatsApp.
+
+**Decisões desta etapa:**
+- Tarefas são criadas numa **lista dedicada** ("Personal Assistant AI"), separada da lista padrão de tarefas pessoais do usuário.
+- Confirmação por WhatsApp, no mesmo padrão da Etapa 3.
+
+### 4.1 — Ativar o serviço do Google Tasks
+
+No editor do Apps Script: menu **"Serviços" → "+"** → localizar **"Tasks API"** → **Adicionar**.
+
+### 4.2 — Criar `Tasks.gs`
+
+Cria a função `obterListaTarefas()`, que cria (na primeira vez) ou reaproveita (nas próximas) a lista dedicada do Google Tasks, guardando o ID dela numa propriedade do script (`TASKS_LIST_ID`). Cria a função `criarTarefa(dados)`, que insere a tarefa nessa lista com título e prazo opcional.
+
+### 4.3 — Atualizar `Code.gs`
+
+`processarIntent` passa a tratar também o intent `criar_tarefa`, criando a tarefa e confirmando por WhatsApp.
+
+### 4.4 — Reautorizar permissões (Tasks)
+
+Mesmo processo das etapas anteriores, incluindo `Tasks.Tasklists.list()` na função temporária de autorização.
+
+### 4.5 — Reimplantar e testar
+
+Nova versão da implantação → enviar mensagem tipo "Cria uma tarefa para revisar o contrato até sexta-feira" → confirmar: (1) resposta de confirmação no WhatsApp, (2) tarefa aparece em tasks.google.com dentro da lista "Personal Assistant AI", (3) linha `TAREFA` na planilha com status `OK`.
+
+✅ **Critério de conclusão da Etapa 4:** tarefa criada na lista dedicada do Google Tasks + confirmação por WhatsApp.
