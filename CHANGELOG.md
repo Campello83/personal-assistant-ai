@@ -10,6 +10,18 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.5.0] - 2026-08-02
+### Adicionado
+- Controle financeiro: aba dedicada "Financeiro" na planilha, registrando gastos e entradas.
+- Intent `registrar_entrada` (receitas) e `controle_financeiro` (consulta de saldo/gastos por periodo).
+- Resumo de gastos por categoria na resposta do WhatsApp.
+- Arquivo `Financeiro.gs`.
+
+### Corrigido
+- Token de acesso temporario da Meta expirado durante os testes — necessario gerar um novo token e atualizar a propriedade `WHATSAPP_TOKEN` (decisao pendente: migrar para token permanente via Usuario do Sistema, adiada por enquanto).
+
+---
+
 ## [0.4.0] - 2026-08-02
 ### Adicionado
 - Gerenciamento do Google Tasks: intent `criar_tarefa` cria tarefas numa lista dedicada ("Personal Assistant AI"), com confirmação por WhatsApp.
