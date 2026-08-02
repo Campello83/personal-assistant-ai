@@ -22,6 +22,10 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.6.2] - 2026-08-02
+### Corrigido
+- Cálculo de vencimento de tarefas com horário estava incorreto (herdava o mesmo bug de fuso horário do campo `due` do Google Tasks, tratando toda tarefa como vencida há quase 24h e pulando o lembrete de "1h antes"). Data e horário agora são guardados juntos, como texto puro, na aba `Tarefas_Horario` (nova coluna `DataPrazo`), sem depender de conversão de fuso a partir do Google Tasks.
+
 ## [0.6.1] - 2026-08-02
 ### Corrigido
 - `ReferenceError: Calendar is not defined` — o serviço avançado Calendar API havia sido ativado manualmente pela interface do Apps Script, mas nunca fora registrado no `appsscript.json` versionado; o deploy automático via clasp sobrescreveu o manifesto e removeu essa ativação. Corrigido registrando `enabledAdvancedServices` no `appsscript.json`.
