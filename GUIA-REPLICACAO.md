@@ -197,6 +197,8 @@ https://github.com/<usuario>/<repositorio>/actions
 ```
 A execução do workflow "Deploy para o Google Apps Script" deve terminar com ✅.
 
+⚠️ **Cuidado importante:** o `clasp push --force` **sobrescreve o projeto inteiro** com o que está no repositório, incluindo o `appsscript.json`. Se algum serviço avançado (Calendar API, Tasks API, etc.) foi ativado **manualmente pela interface do Apps Script** e essa ativação nunca foi registrada no `appsscript.json` versionado no GitHub, o próximo deploy automático **remove essa ativação silenciosamente** — o sintoma é um erro tipo `ReferenceError: Calendar is not defined` depois de um deploy que antes funcionava. Sempre que ativar um serviço avançado pela interface, copie o bloco `enabledAdvancedServices` gerado no `appsscript.json` e leve para o repositório manualmente (ou peça para o assistente sincronizar esse arquivo).
+
 💡 O único passo que continua manual (limitação do próprio Google, não tem como automatizar) é clicar em **"Nova versão"** na implantação do Apps Script quando quiser que as mudanças entrem no ar de fato — o `clasp push` atualiza o código do projeto, mas não cria uma nova versão de implantação automaticamente.
 
 ---

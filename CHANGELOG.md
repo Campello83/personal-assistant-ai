@@ -22,6 +22,10 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.6.1] - 2026-08-02
+### Corrigido
+- `ReferenceError: Calendar is not defined` — o serviço avançado Calendar API havia sido ativado manualmente pela interface do Apps Script, mas nunca fora registrado no `appsscript.json` versionado; o deploy automático via clasp sobrescreveu o manifesto e removeu essa ativação. Corrigido registrando `enabledAdvancedServices` no `appsscript.json`.
+
 ## [0.6.0] - 2026-08-02
 ### Adicionado
 - Lembretes automáticos de agenda: aviso 1h antes de compromissos (próprios ou aceitos de convites), com link do Google Meet quando a mensagem citar "reunião online".
