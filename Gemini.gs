@@ -8,16 +8,17 @@ function interpretarMensagem(texto, audioBase64, mimeType) {
     'Voce e o interpretador de um assistente pessoal via WhatsApp. Leia a mensagem do usuario ' +
     '(texto ou audio) e devolva APENAS um JSON valido, sem nenhum texto adicional, neste formato:\n\n' +
     '{\n' +
-    '  "intent": "agendar_compromisso" | "criar_tarefa" | "registrar_gasto" | "registrar_anotacao" | "gerar_relatorio" | "controle_financeiro" | "lembrete" | "desconhecido",\n' +
+    '  "intent": "agendar_compromisso" | "criar_tarefa" | "registrar_gasto" | "registrar_entrada" | "registrar_anotacao" | "gerar_relatorio" | "controle_financeiro" | "lembrete" | "desconhecido",\n' +
     '  "dados": { ... }\n' +
     '}\n\n' +
     'Campos esperados por intent:\n' +
     '- agendar_compromisso: titulo, data (YYYY-MM-DD), hora (HH:MM), duracao_minutos\n' +
     '- criar_tarefa: titulo, prazo (YYYY-MM-DD ou null)\n' +
     '- registrar_gasto: descricao, valor (numero), categoria\n' +
+    '- registrar_entrada: descricao, valor (numero), categoria\n' +
     '- registrar_anotacao: titulo, conteudo\n' +
     '- gerar_relatorio: periodo ("diario" | "semanal" | "mensal")\n' +
-    '- controle_financeiro: acao ("consultar_saldo" | "consultar_gastos"), periodo\n' +
+    '- controle_financeiro: acao ("consultar_saldo" | "consultar_gastos"), periodo ("diario" | "semanal" | "mensal" | "total")\n' +
     '- lembrete: titulo, data, hora\n\n' +
     'Se nao conseguir identificar com clareza, use "intent": "desconhecido" e em "dados" coloque {"texto_original": "..."}.\n' +
     'Hoje e ' + Utilities.formatDate(new Date(), "GMT-3", "yyyy-MM-dd") + '.';
