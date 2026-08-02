@@ -18,3 +18,31 @@ function baixarMidiaWhatsApp(mediaId) {
     mimeType: info.mime_type
   };
 }
+
+function enviarMensagemWhatsApp(numeroDestino, texto) {
+  const token = PropertiesService.getScriptProperties().getProperty("WHATSAPP_TOKEN");
+  const phoneNumberId = PropertiesService.getScriptProperties().getProperty("WHATSAPP_PHONE_NUMBER_ID");
+
+  const url = "https://graph.facebook.com/v20.0/" + phoneNumberId + "/messages";
+
+  const payload = {
+    messaging_product: "whatsapp",
+    to: numeroDestino,
+    type: "text",
+    text: { body: texto }
+  };
+
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    headers: { Authorization: "Bearer " + token },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+
+  const resposta = UrlFetchApp.fetch(url, options);
+
+  if (resposta.getResponseCode() !== 200) {
+    registrarLog("ERRO", "WhatsApp", "Falha ao enviar mensagem: " + resposta.getContentText(), "ERRO");
+  }
+}
