@@ -88,3 +88,4 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 ## [0.0.1] - 2026-08-01
 ### Adicionado
 - Documentação inicial do projeto (`README.md`): visão geral, princípios, regras, arquitetura, roadmap e stack técnica.
+
