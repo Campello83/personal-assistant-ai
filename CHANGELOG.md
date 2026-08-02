@@ -89,3 +89,4 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 ### Adicionado
 - Documentação inicial do projeto (`README.md`): visão geral, princípios, regras, arquitetura, roadmap e stack técnica.
 
+
