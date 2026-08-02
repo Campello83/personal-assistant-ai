@@ -30,6 +30,81 @@ Esta seção guarda mudanças de arquitetura, planejamento ou ferramentas ao lon
 - Um número de celular com WhatsApp (para os testes, na fase de testes a Meta fornece um número de teste próprio).
 - Uma conta no GitHub.
 - (Opcional, mas recomendado) Uma conta no Postman.
+- (Opcional, mas recomendado) Google Chrome ou Edge, para instalar a extensão de sincronização com o GitHub (ver seção abaixo).
+
+---
+
+## Ferramenta de Produtividade — Sincronização Apps Script ↔ GitHub
+
+Em vez de copiar e colar cada arquivo `.gs` manualmente no site do GitHub, é possível sincronizar direto do editor do Apps Script usando a extensão gratuita **Google Apps Script GitHub Assistant**. Configure isso uma única vez, logo no início do projeto.
+
+⚠️ **Importante:** a extensão **não detecta automaticamente o botão "Implantar"** nem roda em segundo plano — o Google não permite isso. O fluxo passa a ser rápido (2 cliques), mas continua manual: depois de alterar o código, clique em **Push** para enviar ao GitHub.
+
+### 1 — Instalar a extensão
+
+1. Acesse a **Chrome Web Store** e busque por **"Google Apps Script GitHub Assistant"**.
+2. Clique em **"Usar no Chrome"** (ou "Adicionar ao Chrome").
+3. Abra (ou recarregue) o editor do seu projeto no Apps Script — novos botões (**Repository**, **Branch**, **Push**, **Pull**) aparecem na barra de ferramentas.
+
+### 2 — Ativar a API do Apps Script (obrigatório)
+
+1. Acesse:
+```
+https://script.google.com/home/usersettings
+```
+2. Marque a opção **"Google Apps Script API"** como **Ativada**.
+
+### 3 — Gerar um token de acesso do GitHub
+
+A extensão precisa de um token do GitHub para poder salvar arquivos por você.
+
+1. No GitHub, clique na sua foto de perfil (canto superior direito) → **Settings**.
+2. Menu esquerdo → role até o final → **Developer settings**.
+3. **Personal access tokens → Tokens (classic)**.
+4. **Generate new token → Generate new token (classic)**.
+5. Preencha:
+   - **Note**:
+```
+Apps Script Extensao
+```
+   - **Expiration**: escolha `90 days` ou `No expiration`.
+6. Em **Select scopes**, marque:
+   - `repo` (marca a caixa principal, que seleciona as subcaixas automaticamente)
+   - `gist`
+7. Role até o final e clique em **Generate token**.
+8. **Copie o token imediatamente** (ele só aparece uma vez).
+
+### 4 — Conectar a extensão à sua conta do GitHub
+
+1. No editor do Apps Script, clique no botão **"Login to SCM"**.
+2. Preencha:
+   - **Usuário**: seu nome de usuário do GitHub (ex: `campello83`)
+   - **GitHub accessToken**: cole o token gerado no passo 3.
+3. Clique em **Login/Save**.
+
+💡 Se o botão "Repository" não reagir ao clicar, geralmente é pop-up bloqueado pelo navegador (libere pop-ups para `script.google.com`) ou múltiplas contas Google logadas ao mesmo tempo (nesse caso, use uma janela anônima só com a conta certa).
+
+### 5 — Vincular o repositório do projeto
+
+1. Clique no botão **Repository** (agora ativo) → selecione o repositório:
+```
+personal-assistant-ai
+```
+2. No botão **Branch**, escolha:
+```
+main
+```
+3. Na engrenagem ⚙️ ao lado das setas, confirme se a opção de incluir o `appsscript.json` (arquivo de manifesto) está marcada, se desejar versioná-lo também.
+
+### 6 — Uso no dia a dia
+
+Sempre que um arquivo `.gs` for alterado:
+
+1. Clique na seta **Push ↑** (ao lado do botão Branch).
+2. Digite a mensagem de commit (e descrição, quando o campo estiver disponível).
+3. Confirme.
+
+Se o repositório já tiver arquivos criados manualmente antes de configurar a extensão, o primeiro Push pode avisar sobre diferenças entre o código da nuvem (Apps Script) e o do GitHub — nesse caso, sendo o código do Apps Script o mais atual, prossiga com o Push normalmente.
 
 ---
 
