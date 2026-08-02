@@ -108,6 +108,99 @@ Se o repositório já tiver arquivos criados manualmente antes de configurar a e
 
 ---
 
+## Ferramenta de Produtividade (avançado) — Deploy automático via GitHub Actions + clasp
+
+Para quem quer eliminar até o clique manual no botão Push: é possível configurar um pipeline que implanta automaticamente no Apps Script sempre que o código for atualizado no GitHub (por qualquer meio — extensão, upload manual, ou API).
+
+### 1 — Criar o workflow
+
+Crie o arquivo `.github/workflows/deploy.yml` no repositório com o conteúdo abaixo. Ele instala o `clasp` e roda `clasp push` a cada push na branch `main`:
+
+```yaml
+name: Deploy para o Google Apps Script
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar o Clasp
+        run: npm install -g @google/clasp
+
+      - name: Criar arquivos de autenticacao
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          CLASP_JSON: ${{ secrets.CLASP_JSON }}
+        run: |
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+          printf '%s' "$CLASP_JSON" > .clasp.json
+
+      - name: Enviar codigo para o Apps Script
+        run: clasp push --force
+```
+
+⚠️ **Nota de manutenção:** a forma de escrever os secrets em arquivo usa variáveis de ambiente + `printf` (não `echo` com aspas simples) — isso evita que aspas ou caracteres especiais dentro do JSON quebrem o arquivo gerado.
+
+⚠️ **Escopo do token:** subir arquivos dentro de `.github/workflows/` exige que o token de acesso usado no push tenha o escopo `workflow` marcado (além de `repo`), ou o GitHub rejeita o push.
+
+Crie também um `.claspignore` na raiz do repositório, para o clasp enviar só os arquivos certos:
+
+```
+**/**
+!*.gs
+!appsscript.json
+```
+
+### 2 — Gerar as credenciais do clasp (via GitHub Codespaces, sem instalar nada localmente)
+
+1. No repositório GitHub, botão **Code → Codespaces → Create codespace on main**.
+2. No terminal do Codespaces:
+```
+npm install -g @google/clasp
+clasp login --no-localhost
+```
+3. Ao clicar no link gerado, autorizar a conta Google. O navegador vai tentar redirecionar para um endereço `localhost` e vai dar erro de "conexão recusada" — **isso é esperado** no Codespaces. Copie a **URL inteira** da barra de endereço (não só o código) e cole de volta no terminal, onde está esperando "Enter the code from that page".
+4. Pegar o **Script ID** do projeto: Apps Script → engrenagem ⚙️ Configurações do projeto → "ID do script".
+5. No terminal:
+```
+clasp clone SEU_SCRIPT_ID
+```
+Isso gera o arquivo `.clasp.json` na pasta do projeto.
+
+### 3 — Salvar as credenciais como Secrets no repositório
+
+Os arquivos gerados (`~/.clasprc.json` e `.clasp.json`) precisam virar dois *secrets* do repositório: `CLASPRC_JSON` e `CLASP_JSON`.
+
+⚠️ **Problema comum:** colar o conteúdo manualmente na caixa de texto do GitHub (Settings → Secrets and variables → Actions) pode corromper o JSON, porque o terminal do navegador quebra linhas visualmente e isso vira quebra de linha real ao copiar — o `clasp push` então falha com erro tipo `Expected ',' or '}' after property value in JSON`.
+
+**Soluções, em ordem de preferência:**
+- Usar a CLI do GitHub direto no Codespaces: `gh secret set CLASPRC_JSON < ~/.clasprc.json` e `gh secret set CLASP_JSON < .clasp.json`. **Atenção:** o Codespaces às vezes bloqueia isso com erro `403 - Resource not accessible by integration`, mesmo após `gh auth login --with-token` — é um token automático do ambiente sobrepondo a autenticação manual, sem solução simples pelo próprio Codespaces.
+- Alternativa mais confiável: configurar o secret via chamada direta à API do GitHub (`PUT /repos/{owner}/{repo}/actions/secrets/{nome}`), criptografando o valor com a chave pública do repositório (biblioteca `PyNaCl`, endpoint `GET .../actions/secrets/public-key`). Evita completamente problemas de copy-paste.
+
+### 4 — Testar
+
+Faça qualquer commit/push na branch `main` e acompanhe em:
+```
+https://github.com/<usuario>/<repositorio>/actions
+```
+A execução do workflow "Deploy para o Google Apps Script" deve terminar com ✅.
+
+💡 O único passo que continua manual (limitação do próprio Google, não tem como automatizar) é clicar em **"Nova versão"** na implantação do Apps Script quando quiser que as mudanças entrem no ar de fato — o `clasp push` atualiza o código do projeto, mas não cria uma nova versão de implantação automaticamente.
+
+---
+
 ## Etapa 1 — Recepção de Mensagens do WhatsApp
 
 **Objetivo desta etapa:** fazer com que mensagens (texto e áudio) enviadas ao WhatsApp cheguem até um sistema nosso e fiquem registradas numa planilha.
