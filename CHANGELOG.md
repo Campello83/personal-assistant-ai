@@ -22,6 +22,10 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.6.3] - 2026-08-02
+### Corrigido
+- Google Sheets auto-convertia as células de `DataPrazo`/`Horario` (gravadas como texto) para objetos de Data, quebrando silenciosamente o cálculo de vencimento das tarefas (sem gerar erro visível). Corrigido forçando formato de texto puro na gravação e normalizando na leitura.
+
 ## [0.6.2] - 2026-08-02
 ### Corrigido
 - Cálculo de vencimento de tarefas com horário estava incorreto (herdava o mesmo bug de fuso horário do campo `due` do Google Tasks, tratando toda tarefa como vencida há quase 24h e pulando o lembrete de "1h antes"). Data e horário agora são guardados juntos, como texto puro, na aba `Tarefas_Horario` (nova coluna `DataPrazo`), sem depender de conversão de fuso a partir do Google Tasks.
