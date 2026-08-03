@@ -2,7 +2,7 @@
 
 Assistente pessoal de IA, acionado via WhatsApp (texto ou áudio), que organiza agenda, tarefas, finanças e anotações de forma automática — 100% online e 100% gratuito (dentro dos limites dos planos free).
 
-> **Status do projeto:** 🟡 Etapa 6 — Lembretes e Cobranças (v0.6.2)
+> **Status do projeto:** 🟢 Etapa 6 — Lembretes e Cobranças (v0.6.3, concluída)
 > **Repositório:** https://github.com/campello83/personal-assistant-ai *(nome sugerido — ajustar se já existir outro)*
 
 ---
@@ -108,7 +108,7 @@ Cada cenário abaixo é uma **etapa** do projeto. Só avançamos para a próxima
 | 3 | Gerenciamento da Agenda | Criar/editar/consultar compromissos no Google Calendar | 🟢 Concluído |
 | 4 | Gerenciamento do Google Tasks | Criar/editar/consultar tarefas | 🟢 Concluído |
 | 5 | Controle Financeiro | Registro de gastos e entradas na planilha | 🟢 Concluído |
-| 6 | Lembretes e cobranças | Envio automático de lembretes via WhatsApp | 🟡 Em teste final |
+| 6 | Lembretes e cobranças | Envio automático de lembretes via WhatsApp | 🟢 Concluído |
 | 7 | Relatórios | Relatórios diário, semanal e mensal | ⚪ Não iniciado |
 | 8 | Dashboard e indicadores | Painel visual com indicadores principais | ⚪ Não iniciado |
 | 9 | Tratamento de erros e logs | Logs.gs registrando cada movimentação | ⚪ Não iniciado |
