@@ -391,3 +391,44 @@ Mesmo processo das etapas anteriores, incluindo `Tasks.Tasklists.list()` na fun�
 Nova versão da implantação → enviar mensagem tipo "Cria uma tarefa para revisar o contrato até sexta-feira" → confirmar: (1) resposta de confirmação no WhatsApp, (2) tarefa aparece em tasks.google.com dentro da lista "Personal Assistant AI", (3) linha `TAREFA` na planilha com status `OK`.
 
 ✅ **Critério de conclusão da Etapa 4:** tarefa criada na lista dedicada do Google Tasks + confirmação por WhatsApp.
+
+---
+
+## Etapa 5 — Controle Financeiro
+
+**Objetivo:** transformar `registrar_gasto`, `registrar_entrada` e `controle_financeiro` em movimentações reais numa aba própria da planilha, com cálculo de saldo.
+
+**Decisões:** gastos/entradas ficam na aba `Financeiro` (criada automaticamente); saldo considera entradas e gastos, filtrável por período.
+
+### Resumo da implementação
+
+- `Financeiro.gs`: `obterAbaFinanceiro()` cria a aba na primeira vez; `registrarMovimentacao(tipo, dados)` grava uma linha ("Gasto" ou "Entrada"); `consultarFinanceiro(dados)` soma entradas/gastos por período e por categoria.
+- `Gemini.gs`: adiciona os intents `registrar_entrada` e `controle_financeiro` ao prompt.
+- `Code.gs`: `processarIntent` trata os três novos intents, confirmando cada ação por WhatsApp.
+
+⚠️ **Problema comum:** erros `131005` ou `190` (Authentication Error) ao confirmar por WhatsApp indicam token de acesso temporário da Meta expirado (validade 24h) — gere um novo na tela "Configuração da API" e atualize a propriedade `WHATSAPP_TOKEN`.
+
+✅ **Critério de conclusão:** gasto e entrada registrados na aba Financeiro + saldo calculado corretamente e confirmado por WhatsApp.
+
+---
+
+## Etapa 6 — Lembretes e Cobranças
+
+**Objetivo:** avisos automáticos de compromissos (1h antes, com link do Meet se a mensagem citar "reunião online") e de tarefas (checklist diário às 8h, lembretes ajustáveis para tarefas sem horário, cobrança de conclusão para tarefas com horário).
+
+### Resumo da implementação
+
+- **Gatilho automático:** função `verificarLembretes()` rodando a cada 15 minutos (Triggers do Apps Script), cobrindo agenda e tarefas.
+- **Agenda:** `verificarLembretesAgenda()` varre eventos entre 45-75min à frente; se a mensagem original citou "reunião online", o evento foi criado com `Calendar.Events.insert` (serviço avançado) gerando link do Google Meet automaticamente.
+- **Tarefas sem horário:** checklist às 8h, lembrete padrão a cada 2h (ajustável por resposta do usuário, válido só para o dia).
+- **Tarefas com horário:** aviso 1h antes, cobrança no horário, e novo lembrete de hora em hora até confirmação — horário guardado numa aba própria (`Tarefas_Horario`), já que o Google Tasks não suporta horário nativamente.
+- **Formatação no WhatsApp:** concluída (`~riscado~`), em atraso (`_itálico_`).
+- **Estado persistente:** aba `Lembretes_Estado` guarda o que já foi avisado e o próximo horário de lembrete, para o gatilho "lembrar" entre uma checagem e outra.
+- **Deduplicação:** `CacheService` evita processar duas vezes a mesma mensagem (a Meta reenvia automaticamente se a resposta demorar).
+
+⚠️ **Bugs encontrados e corrigidos no caminho (ver CHANGELOG v0.6.1 a v0.6.3 para detalhes):**
+1. `ReferenceError: Calendar is not defined` — o `clasp push --force` sobrescreve o `appsscript.json`; serviços avançados ativados manualmente pela interface precisam estar registrados nesse arquivo, senão um deploy automático os remove.
+2. Cálculo de vencimento de tarefas incorreto — evitar derivar data/hora do campo `due` do Google Tasks (armadilha de fuso: grava meia-noite UTC, que "recua" um dia ao converter pra GMT-3). Guardar data e hora como texto puro, numa aba própria.
+3. Google Sheets **auto-converte** texto que parece data/hora (ex: `"2026-08-03"`, `"00:35"`) para um objeto de Data por conta própria, quebrando o cálculo silenciosamente. Corrigido forçando formato de texto puro (`setNumberFormat("@")`) na gravação e normalizando na leitura.
+
+✅ **Critério de conclusão:** lembrete de compromisso (1h antes, com link do Meet) e lembrete de tarefa com horário (1h antes) chegando corretamente por WhatsApp.
