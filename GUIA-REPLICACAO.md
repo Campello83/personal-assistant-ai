@@ -432,3 +432,28 @@ Nova versão da implantação → enviar mensagem tipo "Cria uma tarefa para rev
 3. Google Sheets **auto-converte** texto que parece data/hora (ex: `"2026-08-03"`, `"00:35"`) para um objeto de Data por conta própria, quebrando o cálculo silenciosamente. Corrigido forçando formato de texto puro (`setNumberFormat("@")`) na gravação e normalizando na leitura.
 
 ✅ **Critério de conclusão:** lembrete de compromisso (1h antes, com link do Meet) e lembrete de tarefa com horário (1h antes) chegando corretamente por WhatsApp.
+
+---
+
+## Etapa 7 — Relatórios (diário, semanal, mensal)
+
+**Objetivo:** gerar um resumo (agenda + tarefas + financeiro) sob demanda, pelo WhatsApp, e também de forma automática em horários fixos.
+
+**Decisões desta etapa:**
+- Relatório = revisão do período **passado**, na mesma convenção já usada pelo controle financeiro (Etapa 5): "diário" = hoje, "semanal" = últimos 7 dias, "mensal" = últimos 30 dias.
+- Envio automático reaproveita o **mesmo gatilho de 15 em 15 minutos** já criado na Etapa 6 (`verificarLembretes`), em vez de criar um trigger novo — mantém a arquitetura simples.
+- Deduplicação do envio automático reaproveita a aba `Lembretes_Estado` e as funções `buscarEstado`/`salvarEstado` já existentes, em vez de criar uma aba nova só para isso.
+
+### Resumo da implementação
+
+- `Relatorios.gs` (novo arquivo): `gerarRelatorio(dados)` combina `consultarFinanceiro()` (Financeiro.gs), eventos do `CalendarApp` no período e tarefas do Google Tasks (concluídas no período + pendentes no total). `formatarRelatorio()` monta a mensagem para o WhatsApp.
+- `Code.gs`: `processarIntent` passa a tratar o intent `gerar_relatorio` (já existia no prompt do Gemini desde a Etapa 2, mas não estava implementado) — permite pedir relatório a qualquer momento pelo WhatsApp.
+- `Lembretes.gs`: `verificarLembretes()` passa a chamar também `verificarRelatoriosAutomaticos()`. Envio automático às 21h: relatório diário todo dia, semanal aos domingos, mensal no último dia do mês.
+
+### Teste funcional (pendente)
+
+- Enviar pelo WhatsApp algo como "me manda o relatório de hoje" e conferir se chega um resumo coerente de agenda, tarefas e financeiro.
+- Repetir pedindo "semanal" e "mensal".
+- Para validar o envio automático sem esperar até as 21h, rodar manualmente pelo editor do Apps Script: `enviarRelatorioAutomatico("diario", "TESTE_MANUAL")`.
+
+✅ **Critério de conclusão da Etapa 7:** relatório sob demanda (diário/semanal/mensal) chegando corretamente por WhatsApp, com dados coerentes de agenda, tarefas e financeiro.
