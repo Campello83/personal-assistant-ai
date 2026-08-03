@@ -31,14 +31,25 @@ function obterAbaHorarios() {
 
 function salvarHorarioTarefa(taskId, dataPrazo, horario) {
   const aba = obterAbaHorarios();
-  aba.appendRow([taskId, dataPrazo, horario]);
+  const linha = aba.getLastRow() + 1;
+  aba.getRange(linha, 1, 1, 3).setNumberFormat("@"); // forca texto puro (evita auto-conversao do Sheets)
+  aba.getRange(linha, 1, 1, 3).setValues([[taskId, dataPrazo, horario]]);
+}
+
+function normalizarValorPlanilha(valor, formato) {
+  // O Google Sheets pode auto-converter texto tipo "2026-08-03" ou "00:35"
+  // para um objeto Date por conta propria. Isso normaliza de volta pra texto.
+  if (valor instanceof Date) {
+    return Utilities.formatDate(valor, "GMT-3", formato);
+  }
+  return valor;
 }
 
 function obterHorarioTarefa(taskId) {
   const aba = obterAbaHorarios();
   const linhas = aba.getDataRange().getValues();
   for (let i = 1; i < linhas.length; i++) {
-    if (linhas[i][0] === taskId) return linhas[i][2];
+    if (linhas[i][0] === taskId) return normalizarValorPlanilha(linhas[i][2], "HH:mm");
   }
   return null;
 }
@@ -47,7 +58,7 @@ function obterDataPrazoTarefa(taskId) {
   const aba = obterAbaHorarios();
   const linhas = aba.getDataRange().getValues();
   for (let i = 1; i < linhas.length; i++) {
-    if (linhas[i][0] === taskId) return linhas[i][1];
+    if (linhas[i][0] === taskId) return normalizarValorPlanilha(linhas[i][1], "yyyy-MM-dd");
   }
   return null;
 }
