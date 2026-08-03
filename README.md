@@ -2,7 +2,7 @@
 
 Assistente pessoal de IA, acionado via WhatsApp (texto ou áudio), que organiza agenda, tarefas, finanças e anotações de forma automática — 100% online e 100% gratuito (dentro dos limites dos planos free).
 
-> **Status do projeto:** 🟡 Etapa 0 — Documentação inicial
+> **Status do projeto:** 🟡 Etapa 6 — Lembretes e Cobranças (v0.6.2)
 > **Repositório:** https://github.com/campello83/personal-assistant-ai *(nome sugerido — ajustar se já existir outro)*
 
 ---
@@ -102,13 +102,13 @@ Cada cenário abaixo é uma **etapa** do projeto. Só avançamos para a próxima
 
 | # | Etapa | Descrição | Status |
 |---|---|---|---|
-| 0 | Documentação inicial | README.md, visão geral, estrutura do repositório | 🟡 Em andamento |
-| 1 | Recepção de mensagens | Webhook do WhatsApp recebendo texto e áudio (Meta Cloud API) | ⚪ Não iniciado |
-| 2 | Interpretação com Gemini | Transformar mensagem em JSON estruturado | ⚪ Não iniciado |
-| 3 | Gerenciamento da Agenda | Criar/editar/consultar compromissos no Google Calendar | ⚪ Não iniciado |
-| 4 | Gerenciamento do Google Tasks | Criar/editar/consultar tarefas | ⚪ Não iniciado |
-| 5 | Controle Financeiro | Registro de gastos e entradas na planilha | ⚪ Não iniciado |
-| 6 | Lembretes e cobranças | Envio automático de lembretes via WhatsApp | ⚪ Não iniciado |
+| 0 | Documentação inicial | README.md, visão geral, estrutura do repositório | 🟢 Concluído |
+| 1 | Recepção de mensagens | Webhook do WhatsApp recebendo texto e áudio (Meta Cloud API) | 🟢 Concluído |
+| 2 | Interpretação com Gemini | Transformar mensagem em JSON estruturado | 🟢 Concluído |
+| 3 | Gerenciamento da Agenda | Criar/editar/consultar compromissos no Google Calendar | 🟢 Concluído |
+| 4 | Gerenciamento do Google Tasks | Criar/editar/consultar tarefas | 🟢 Concluído |
+| 5 | Controle Financeiro | Registro de gastos e entradas na planilha | 🟢 Concluído |
+| 6 | Lembretes e cobranças | Envio automático de lembretes via WhatsApp | 🟡 Em teste final |
 | 7 | Relatórios | Relatórios diário, semanal e mensal | ⚪ Não iniciado |
 | 8 | Dashboard e indicadores | Painel visual com indicadores principais | ⚪ Não iniciado |
 | 9 | Tratamento de erros e logs | Logs.gs registrando cada movimentação | ⚪ Não iniciado |
@@ -170,3 +170,10 @@ Ao final do projeto será gerado um **PDF com passo a passo minucioso**, escrito
 | Data | Etapa | O que foi feito |
 |---|---|---|
 | 2026-08-01 | Etapa 0 | Criação da visão geral do projeto e deste README.md |
+| 2026-08-01 | Etapa 1 | Recepção de mensagens do WhatsApp (webhook, texto e áudio) |
+| 2026-08-01 | Etapa 2 | Interpretação de mensagens com o Gemini (JSON estruturado) |
+| 2026-08-01 | Etapa 3 | Agendamento de compromissos no Google Calendar |
+| 2026-08-02 | Etapa 4 | Criação de tarefas no Google Tasks |
+| 2026-08-02 | Etapa 5 | Controle financeiro (gastos, entradas, saldo) |
+| 2026-08-02 | Etapa 6 | Lembretes automáticos de agenda e tarefas (em teste final) |
+| 2026-08-02 | — | Automação de deploy: GitHub Actions + clasp, e assistente com push direto ao repositório |
