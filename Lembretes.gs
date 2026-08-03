@@ -3,6 +3,7 @@
 function verificarLembretes() {
   verificarLembretesAgenda();
   verificarLembretesTarefas();
+  verificarRelatoriosAutomaticos();
 }
 
 function obterAbaLembretes() {

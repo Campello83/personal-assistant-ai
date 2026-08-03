@@ -134,6 +134,11 @@ function processarIntent(resultado, numero) {
     enviarMensagemWhatsApp(numero, mensagem);
     registrarLog("FINANCEIRO", numero, JSON.stringify(resumo), "OK");
 
+  } else if (intent === "gerar_relatorio") {
+    const relatorio = gerarRelatorio(dados);
+    enviarMensagemWhatsApp(numero, formatarRelatorio(relatorio));
+    registrarLog("RELATORIO", numero, "Relatorio " + relatorio.periodo + " gerado sob demanda", "OK");
+
   } else {
     enviarMensagemWhatsApp(numero, "Recebi sua mensagem, mas essa funcao ainda esta em construcao.");
     registrarLog("SISTEMA", numero, "Intent ainda nao implementado: " + intent, "IGNORADO");
