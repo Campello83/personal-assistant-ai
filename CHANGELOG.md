@@ -10,6 +10,15 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.11.0] - 2026-08-04
+### Adicionado
+- `docs/Personal Assistant AI - Guia de Replicacao.pdf`: documento final consolidado (Etapa 11), reorganizando todo o conteúdo de `GUIA-REPLICACAO.md` em ordem cronológica de configuração (em vez de ordem de desenvolvimento), escrito para quem não tem conhecimento técnico — cobre contas, credenciais, código, deploy, webhook, gatilhos, teste geral e um apêndice de problemas comuns.
+
+### Decidido
+- Roadmap do projeto (README, seção 6) concluído com esta etapa.
+
+---
+
 ## [0.10.1] - 2026-08-04
 ### Corrigido
 - `Config.gs`: número de telefone salvo na aba "Memoria_Contexto" era convertido automaticamente para número pelo Google Sheets (mesma armadilha de tipo já vista com datas em `Tasks.gs`), quebrando a comparação de igualdade e fazendo o assistente não reconhecer referências indiretas ("essa reunião") logo após criar o compromisso. Corrigido forçando formato de texto na coluna "Numero" e comparando com `String()` em `salvarMemoria`/`buscarMemoria`.
