@@ -446,8 +446,8 @@ Nova versão da implantação → enviar mensagem tipo "Cria uma tarefa para rev
 
 ### Resumo da implementação
 
-- `Dashboard.gs`: função `exibirDashboard(e)`, lê o parâmetro `periodo` (`diario`/`semanal`/`mensal`, padrão `diario`), monta os dados com `gerarRelatorio()` e renderiza o template `Dashboard.html`.
-- `Dashboard.html`: página com cartões de indicadores (saldo, entradas, gastos, tarefas, compromissos), gráfico de pizza de gastos por categoria (biblioteca **Google Charts**, carregada via `https://www.gstatic.com/charts/loader.js`) e lista de compromissos do período. Botões no topo trocam o período (recarregam a página com `?periodo=...`).
+- `Dashboard.gs`: função `exibirDashboard(e)`, lê o parâmetro `periodo` (`diario`/`semanal`/`mensal`, padrão `diario`), monta os dados com `gerarRelatorio()` e renderiza o template `Painel.html`.
+- `Painel.html`: página com cartões de indicadores (saldo, entradas, gastos, tarefas, compromissos), gráfico de pizza de gastos por categoria (biblioteca **Google Charts**, carregada via `https://www.gstatic.com/charts/loader.js`) e lista de compromissos do período. Botões no topo trocam o período (recarregam a página com `?periodo=...`).
 - `Code.gs`: `doGet` passou a checar o parâmetro `painel` **antes** da lógica de verificação do webhook da Meta — se presente, retorna o painel; caso contrário, segue o fluxo normal (verificação do webhook).
 - `.claspignore`: liberado o envio de arquivos `.html` (antes só `.gs` e `appsscript.json` eram sincronizados).
 

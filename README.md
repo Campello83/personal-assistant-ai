@@ -90,7 +90,7 @@ Agenda.gs  Tasks.gs   Financeiro.gs   Anotacoes.gs   Relatorios.gs   Lembretes.g
 | `Anotacoes.gs` | Registro de anotações formatadas (documentação) |
 | `Relatorios.gs` | Geração de relatórios diários, semanais e mensais |
 | `Lembretes.gs` | Envio de lembretes e cobranças automáticas |
-| `Dashboard.gs` / `Dashboard.html` | Painel visual (Web App) com indicadores principais |
+| `Dashboard.gs` / `Painel.html` | Painel visual (Web App) com indicadores principais |
 | `Config.gs` | Configurações gerais e memória do assistente |
 | `Logs.gs` | Registro completo (full log) de cada movimentação do sistema |
 | `HealthCheck.gs` | Checagem periódica de saúde do sistema (APIs, cotas, falhas) |

@@ -11,7 +11,7 @@ function exibirDashboard(e) {
   const periodo = (e.parameter["periodo"] || "diario");
   const relatorio = gerarRelatorio({ periodo: periodo });
 
-  const template = HtmlService.createTemplateFromFile("Dashboard");
+  const template = HtmlService.createTemplateFromFile("Painel");
   template.relatorio = relatorio;
   template.periodo = periodo;
   template.dadosJson = JSON.stringify(relatorio);

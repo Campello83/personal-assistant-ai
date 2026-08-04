@@ -32,7 +32,7 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 - Cartões de indicadores: saldo, entradas, gastos, tarefas concluídas/pendentes e total de compromissos no período.
 - Gráfico de pizza de gastos por categoria (Google Charts) e lista de compromissos do período.
 - Filtro de período (hoje / 7 dias / 30 dias) direto na página, reaproveitando `gerarRelatorio()` (Etapa 7).
-- Arquivos `Dashboard.gs` e `Dashboard.html`.
+- Arquivos `Dashboard.gs` e `Painel.html`.
 
 ### Decidido
 - Sem autenticação por senha nesta etapa — o link do painel não deve ser compartilhado publicamente. Reavaliar proteção por senha/token se o projeto sair da fase de uso pessoal.
