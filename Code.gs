@@ -118,6 +118,21 @@ function processarIntent(resultado, numero) {
       if (evento.linkReuniao) mensagem += "\nLink da reuniao: " + evento.linkReuniao;
       enviarMensagemWhatsApp(numero, mensagem);
       registrarLog("AGENDA", numero, JSON.stringify(evento), "OK");
+      salvarMemoria(numero, "ultimo_compromisso", { eventId: evento.eventId, titulo: evento.titulo, data: evento.data, hora: evento.hora });
+    });
+
+  } else if (intent === "editar_compromisso") {
+    executarComSeguranca("AGENDA", numero, "Nao consegui alterar o compromisso agora. Ja registrei o erro, tente novamente em instantes.", function () {
+      const resultadoEdicao = editarCompromisso(dados, numero);
+      let mensagem;
+      if (resultadoEdicao.acao === "cancelar") {
+        mensagem = "Compromisso cancelado:\n" + resultadoEdicao.titulo;
+      } else {
+        mensagem = "Compromisso atualizado:\n" + resultadoEdicao.titulo + "\n" + resultadoEdicao.inicio + " as " + resultadoEdicao.fim;
+        salvarMemoria(numero, "ultimo_compromisso", { eventId: resultadoEdicao.eventId, titulo: resultadoEdicao.titulo });
+      }
+      enviarMensagemWhatsApp(numero, mensagem);
+      registrarLog("AGENDA", numero, JSON.stringify(resultadoEdicao), "OK");
     });
 
   } else if (intent === "criar_tarefa") {

@@ -527,3 +527,30 @@ Etapa 8 - Dashboard e indicadores (painel visual via Web App)
 - Rode `verificarSaudeSistema` manualmente pelo editor do Apps Script (selecionar a função → Executar) e confirme que aparecem 4 linhas novas na aba Logs (`HEALTHCHECK`), uma por serviço.
 
 ✅ **Critério de conclusão da Etapa 9:** erro em qualquer intent gera aviso amigável ao usuário + registro completo na aba Logs; `verificarSaudeSistema` roda automaticamente todo dia e avisa o dono do sistema caso alguma integração esteja fora do ar.
+
+---
+
+## Etapa 10 — Configurações e Memória
+
+**Objetivo desta etapa:** guardar preferências gerais do assistente e dar a ele uma memória de curto prazo, permitindo referências indiretas como "muda essa reunião pra 16h" ou "cancela esse compromisso" — decisão que havia sido adiada lá na Etapa 3 (ver GUIA, seção da Etapa 3, e CHANGELOG v0.3.0).
+
+**Decisões desta etapa:**
+- Memória de curto prazo guardada por usuário (número do WhatsApp) numa aba própria (`Memoria_Contexto`), com validade padrão de 6h — evita aplicar "essa reunião" a algo mencionado dias atrás.
+- Escopo restrito a compromissos por enquanto (era o caso pendente desde a Etapa 3). Edição de tarefas ou financeiro por referência pode reaproveitar a mesma infraestrutura, se/quando fizer sentido.
+- Preferências gerais (aba "Config") ficam prontas como infraestrutura para ajustes futuros de comportamento — hoje nenhuma tela ou intent altera preferências ainda, mas qualquer parte do código pode ler/gravar via `obterPreferencia`/`definirPreferencia`.
+
+### Resumo da implementação
+
+- `Config.gs` (novo arquivo): `obterPreferencia(chave, padrao)` / `definirPreferencia(chave, valor)` (aba "Config"); `salvarMemoria(numero, chave, valorObjeto)` / `buscarMemoria(numero, chave, validoPorHoras)` (aba "Memoria_Contexto").
+- `Gemini.gs`: novo intent `editar_compromisso` no prompt, com campos `acao` ("alterar"/"cancelar"), `titulo_busca`, `data_busca`, `titulo_novo`, `data_nova`, `hora_nova`, `duracao_minutos_nova`.
+- `Agenda.gs`: `localizarCompromisso(dados, numero)` resolve o compromisso alvo — por referência indireta (usa a memória) ou por busca de título numa janela de +/- 30 dias; `editarCompromisso(dados, numero)` aplica a alteração ou cancela.
+- `Code.gs`: `processarIntent` trata `editar_compromisso`; toda criação ou alteração de compromisso atualiza a memória (`ultimo_compromisso`) para a próxima referência indireta funcionar.
+
+### Teste funcional
+
+1. Envie "Marca uma reunião com o cliente amanhã às 15h" (cria o compromisso e guarda na memória).
+2. Em seguida, envie "muda essa reunião pra 16h" — sem repetir o título. Confirme que o assistente reconhece o compromisso certo e envia a confirmação com o novo horário.
+3. Envie "cancela essa reunião" e confirme que o evento some do Google Calendar.
+4. Teste também a busca por título direto (sem depender da memória): "cancela a reunião com o cliente".
+
+✅ **Critério de conclusão da Etapa 10:** compromisso criado, depois alterado e cancelado por referência indireta ("essa reunião"), tudo confirmado por WhatsApp e sem precisar repetir o título.

@@ -10,6 +10,20 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.10.0] - 2026-08-04
+### Adicionado
+- `Config.gs`: aba "Config" para preferências chave/valor persistentes (`obterPreferencia`/`definirPreferencia`) e aba "Memoria_Contexto" para memória de curto prazo por usuário (`salvarMemoria`/`buscarMemoria`, com validade padrão de 6h).
+- Intent `editar_compromisso`: permite alterar (título, data, hora, duração) ou cancelar um compromisso já existente, inclusive por referência indireta ("essa reunião", "aquele compromisso") usando a memória do último compromisso mencionado.
+- `Agenda.gs`: `localizarCompromisso` (resolve o compromisso alvo por referência de memória ou busca por título/data) e `editarCompromisso`.
+- Toda vez que um compromisso é criado ou alterado, o assistente guarda o `eventId` na memória do usuário (`ultimo_compromisso`), habilitando a próxima referência indireta.
+
+### Decidido
+- Implementa a decisão registrada na Etapa 3 (CHANGELOG v0.3.0): edição de compromissos por referência, que dependia de um sistema de memória, agora está pronta.
+- Memória de curto prazo expira em 6h por padrão, para evitar que o assistente aplique "essa reunião" a algo mencionado dias atrás.
+- Escopo desta etapa ficou restrito a compromissos (conforme decisão original); edição de tarefas e financeiro por referência fica para quando houver demanda, reaproveitando a mesma infraestrutura de memória.
+
+---
+
 ## [0.9.0] - 2026-08-04
 ### Adicionado
 - `HealthCheck.gs`: checagem de saúde das integrações externas (Gemini, WhatsApp, Calendar, Tasks); se alguma falhar, envia alerta automático por WhatsApp ao dono do sistema, além de registrar na aba Logs (`HEALTHCHECK`).

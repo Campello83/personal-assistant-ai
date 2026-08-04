@@ -2,7 +2,7 @@
 
 Assistente pessoal de IA, acionado via WhatsApp (texto ou áudio), que organiza agenda, tarefas, finanças e anotações de forma automática — 100% online e 100% gratuito (dentro dos limites dos planos free).
 
-> **Status do projeto:** 🟢 Etapa 9 — Tratamento de Erros e Logs (v0.9.0, concluída)
+> **Status do projeto:** 🟢 Etapa 10 — Configurações e Memória (v0.10.0, concluída)
 > **Repositório:** https://github.com/campello83/personal-assistant-ai *(nome sugerido — ajustar se já existir outro)*
 
 ---
@@ -113,7 +113,7 @@ Cada cenário abaixo é uma **etapa** do projeto. Só avançamos para a próxima
 | 7 | Relatórios | Relatórios diário, semanal e mensal | 🟢 Concluída |
 | 8 | Dashboard e indicadores | Painel visual com indicadores principais | 🟢 Concluído |
 | 9 | Tratamento de erros e logs | Logs.gs registrando cada movimentação + HealthCheck.gs | 🟢 Concluído |
-| 10 | Configurações e memória | Config.gs com preferências e memória do assistente | ⚪ Não iniciado |
+| 10 | Configurações e memória | Config.gs com preferências e memória do assistente | 🟢 Concluído |
 | 11 | Documento final (PDF) | Passo a passo para replicar a configuração do zero | ⚪ Não iniciado |
 
 **Legenda:** 🟢 Concluído · 🟡 Em andamento · ⚪ Não iniciado
@@ -181,3 +181,4 @@ Ao final do projeto será gerado um **PDF com passo a passo minucioso**, escrito
 | 2026-08-03 | Etapa 7 | Relatórios (diário/semanal/mensal) — teste funcional OK, concluída (v0.7.0) |
 | 2026-08-04 | Etapa 8 | Dashboard e indicadores — painel visual (Web App), concluída (v0.8.0) |
 | 2026-08-04 | Etapa 9 | Tratamento de erros e logs — erros por intent protegidos, HealthCheck.gs, alerta automático ao dono, concluída (v0.9.0) |
+| 2026-08-04 | Etapa 10 | Configurações e memória — Config.gs (preferências + memória de curto prazo), edição/cancelamento de compromissos por referência ("essa reunião"), concluída (v0.10.0) |

@@ -8,11 +8,19 @@ function interpretarMensagem(texto, audioBase64, mimeType) {
     'Voce e o interpretador de um assistente pessoal via WhatsApp. Leia a mensagem do usuario ' +
     '(texto ou audio) e devolva APENAS um JSON valido, sem nenhum texto adicional, neste formato:\n\n' +
     '{\n' +
-    '  "intent": "agendar_compromisso" | "criar_tarefa" | "registrar_gasto" | "registrar_entrada" | "registrar_anotacao" | "gerar_relatorio" | "controle_financeiro" | "lembrete" | "desconhecido",\n' +
+    '  "intent": "agendar_compromisso" | "editar_compromisso" | "criar_tarefa" | "registrar_gasto" | "registrar_entrada" | "registrar_anotacao" | "gerar_relatorio" | "controle_financeiro" | "lembrete" | "desconhecido",\n' +
     '  "dados": { ... }\n' +
     '}\n\n' +
     'Campos esperados por intent:\n' +
     '- agendar_compromisso: titulo, data (YYYY-MM-DD), hora (HH:MM), duracao_minutos, reuniao_online (true SOMENTE se a mensagem citar explicitamente "reuniao online" ou "reunião online")\n' +
+    '- editar_compromisso: usado quando o usuario quer ALTERAR ou CANCELAR um compromisso ja existente (ex: "muda a reuniao com o cliente pra 16h", "cancela essa reuniao", "adianta o compromisso de amanha pra hoje"). Campos:\n' +
+    '  - acao: "alterar" ou "cancelar"\n' +
+    '  - titulo_busca: palavras do titulo do compromisso a alterar, PARA IDENTIFICA-LO (ex: "reuniao com o cliente"). Deixe null/vazio se o usuario se referir de forma indireta ao ultimo compromisso mencionado na conversa (ex: "essa reuniao", "esse compromisso", "aquele evento")\n' +
+    '  - data_busca: data (YYYY-MM-DD) do compromisso a alterar, APENAS se o usuario mencionar quando ele e/era, para ajudar a localizar (senao null)\n' +
+    '  - titulo_novo: novo titulo, apenas se o usuario pedir para mudar o titulo (senao null)\n' +
+    '  - data_nova: nova data (YYYY-MM-DD), apenas se for alterada (senao null)\n' +
+    '  - hora_nova: nova hora (HH:MM), apenas se for alterada (senao null)\n' +
+    '  - duracao_minutos_nova: nova duracao, apenas se for alterada (senao null)\n' +
     '- criar_tarefa: titulo, prazo (YYYY-MM-DD ou null), hora (HH:MM ou null - so preencher se a mensagem citar um horario especifico)\n' +
     '- registrar_gasto: descricao, valor (numero), categoria\n' +
     '- registrar_entrada: descricao, valor (numero), categoria\n' +
