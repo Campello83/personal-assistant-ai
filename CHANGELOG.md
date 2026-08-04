@@ -10,6 +10,12 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.10.1] - 2026-08-04
+### Corrigido
+- `Config.gs`: número de telefone salvo na aba "Memoria_Contexto" era convertido automaticamente para número pelo Google Sheets (mesma armadilha de tipo já vista com datas em `Tasks.gs`), quebrando a comparação de igualdade e fazendo o assistente não reconhecer referências indiretas ("essa reunião") logo após criar o compromisso. Corrigido forçando formato de texto na coluna "Numero" e comparando com `String()` em `salvarMemoria`/`buscarMemoria`.
+
+---
+
 ## [0.10.0] - 2026-08-04
 ### Adicionado
 - `Config.gs`: aba "Config" para preferências chave/valor persistentes (`obterPreferencia`/`definirPreferencia`) e aba "Memoria_Contexto" para memória de curto prazo por usuário (`salvarMemoria`/`buscarMemoria`, com validade padrão de 6h).

@@ -2,7 +2,7 @@
 
 Assistente pessoal de IA, acionado via WhatsApp (texto ou áudio), que organiza agenda, tarefas, finanças e anotações de forma automática — 100% online e 100% gratuito (dentro dos limites dos planos free).
 
-> **Status do projeto:** 🟢 Etapa 10 — Configurações e Memória (v0.10.0, concluída)
+> **Status do projeto:** 🟢 Etapa 10 — Configurações e Memória (v0.10.1, concluída)
 > **Repositório:** https://github.com/campello83/personal-assistant-ai *(nome sugerido — ajustar se já existir outro)*
 
 ---
