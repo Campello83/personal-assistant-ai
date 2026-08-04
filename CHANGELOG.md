@@ -10,7 +10,7 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
-## [Não lançado] - Etapa 7 (aguardando teste funcional)
+## [0.7.0] - 2026-08-03
 ### Adicionado
 - Relatórios (diário, semanal, mensal): resumo de agenda, tarefas e financeiro do período.
 - Intent `gerar_relatorio` implementado no roteador (já existia no prompt do Gemini desde a Etapa 2).
@@ -21,7 +21,8 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 - Período do relatório segue a mesma convenção do controle financeiro (Etapa 5): olhar para trás (hoje / últimos 7 dias / últimos 30 dias), não para frente.
 - Estado de deduplicação do envio automático reaproveita a aba `Lembretes_Estado` já existente, em vez de criar uma aba nova.
 
-> Esta versão vira `0.7.0` assim que o teste funcional (relatório chegando corretamente pelo WhatsApp) for confirmado.
+### Testado
+- Relatório sob demanda (diário/semanal/mensal) validado via WhatsApp.
 
 ---
 

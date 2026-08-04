@@ -450,10 +450,8 @@ Nova versão da implantação → enviar mensagem tipo "Cria uma tarefa para rev
 - `Code.gs`: `processarIntent` passa a tratar o intent `gerar_relatorio` (já existia no prompt do Gemini desde a Etapa 2, mas não estava implementado) — permite pedir relatório a qualquer momento pelo WhatsApp.
 - `Lembretes.gs`: `verificarLembretes()` passa a chamar também `verificarRelatoriosAutomaticos()`. Envio automático às 21h: relatório diário todo dia, semanal aos domingos, mensal no último dia do mês.
 
-### Teste funcional (pendente)
+### Teste funcional
 
-- Enviar pelo WhatsApp algo como "me manda o relatório de hoje" e conferir se chega um resumo coerente de agenda, tarefas e financeiro.
-- Repetir pedindo "semanal" e "mensal".
-- Para validar o envio automático sem esperar até as 21h, rodar manualmente pelo editor do Apps Script: `enviarRelatorioAutomatico("diario", "TESTE_MANUAL")`.
+✅ Confirmado — relatório sob demanda (diário/semanal/mensal) chegando corretamente por WhatsApp, com dados coerentes de agenda, tarefas e financeiro.
 
 ✅ **Critério de conclusão da Etapa 7:** relatório sob demanda (diário/semanal/mensal) chegando corretamente por WhatsApp, com dados coerentes de agenda, tarefas e financeiro.

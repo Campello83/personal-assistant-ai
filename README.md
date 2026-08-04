@@ -2,7 +2,7 @@
 
 Assistente pessoal de IA, acionado via WhatsApp (texto ou áudio), que organiza agenda, tarefas, finanças e anotações de forma automática — 100% online e 100% gratuito (dentro dos limites dos planos free).
 
-> **Status do projeto:** 🟡 Etapa 7 — Relatórios (código implementado, aguardando teste funcional)
+> **Status do projeto:** 🟢 Etapa 7 — Relatórios (v0.7.0, concluída)
 > **Repositório:** https://github.com/campello83/personal-assistant-ai *(nome sugerido — ajustar se já existir outro)*
 
 ---
@@ -109,7 +109,7 @@ Cada cenário abaixo é uma **etapa** do projeto. Só avançamos para a próxima
 | 4 | Gerenciamento do Google Tasks | Criar/editar/consultar tarefas | 🟢 Concluído |
 | 5 | Controle Financeiro | Registro de gastos e entradas na planilha | 🟢 Concluído |
 | 6 | Lembretes e cobranças | Envio automático de lembretes via WhatsApp | 🟢 Concluído |
-| 7 | Relatórios | Relatórios diário, semanal e mensal | 🟡 Em andamento (aguardando teste funcional) |
+| 7 | Relatórios | Relatórios diário, semanal e mensal | 🟢 Concluída |
 | 8 | Dashboard e indicadores | Painel visual com indicadores principais | ⚪ Não iniciado |
 | 9 | Tratamento de erros e logs | Logs.gs registrando cada movimentação | ⚪ Não iniciado |
 | 10 | Configurações e memória | Config.gs com preferências e memória do assistente | ⚪ Não iniciado |
@@ -177,4 +177,4 @@ Ao final do projeto será gerado um **PDF com passo a passo minucioso**, escrito
 | 2026-08-02 | Etapa 5 | Controle financeiro (gastos, entradas, saldo) |
 | 2026-08-02 | Etapa 6 | Lembretes automáticos de agenda e tarefas (em teste final) |
 | 2026-08-02 | — | Automação de deploy: GitHub Actions + clasp, e assistente com push direto ao repositório |
-| 2026-08-03 | Etapa 7 | Relatórios (diário/semanal/mensal) implementados — sob demanda e automático (aguardando teste funcional) |
+| 2026-08-03 | Etapa 7 | Relatórios (diário/semanal/mensal) — teste funcional OK, concluída (v0.7.0) |
