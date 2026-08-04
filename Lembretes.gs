@@ -1,9 +1,27 @@
 // Lembretes.gs — Sistema de lembretes automaticos (agenda e tarefas)
 
 function verificarLembretes() {
-  verificarLembretesAgenda();
-  verificarLembretesTarefas();
-  verificarRelatoriosAutomaticos();
+  // Ponto de entrada do gatilho automatico (a cada 15 min) — sem este
+  // try/catch, uma falha em qualquer etapa (ex: cota do Calendar estourada)
+  // interrompe a execucao silenciosamente e so aparece em "Execucoes" do
+  // Apps Script. Aqui o erro vai para a aba Logs e avisa o dono do sistema.
+  try {
+    verificarLembretesAgenda();
+  } catch (erro) {
+    registrarErro("Lembretes-Agenda", erro, "verificarLembretesAgenda");
+  }
+
+  try {
+    verificarLembretesTarefas();
+  } catch (erro) {
+    registrarErro("Lembretes-Tarefas", erro, "verificarLembretesTarefas");
+  }
+
+  try {
+    verificarRelatoriosAutomaticos();
+  } catch (erro) {
+    registrarErro("Relatorios-Automaticos", erro, "verificarRelatoriosAutomaticos");
+  }
 }
 
 function obterAbaLembretes() {

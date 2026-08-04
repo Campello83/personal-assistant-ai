@@ -10,6 +10,20 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.9.0] - 2026-08-04
+### Adicionado
+- `HealthCheck.gs`: checagem de saúde das integrações externas (Gemini, WhatsApp, Calendar, Tasks); se alguma falhar, envia alerta automático por WhatsApp ao dono do sistema, além de registrar na aba Logs (`HEALTHCHECK`).
+- `registrarErro` em `Logs.gs`: log de erro crítico (status `CRITICO`) com aviso automático por WhatsApp ao dono, usado nas falhas que exigem atenção manual.
+- `executarComSeguranca` em `Code.gs`: cada intent (`agendar_compromisso`, `criar_tarefa`, `registrar_gasto`, `registrar_entrada`, `controle_financeiro`, `gerar_relatorio`) agora roda protegido — se falhar, o usuário recebe um aviso amigável no WhatsApp em vez de silêncio, e o erro completo fica registrado.
+- `verificarLembretes()` (gatilho automático a cada 15 min) protegido por `try/catch` em cada etapa (agenda, tarefas, relatórios automáticos), evitando que uma falha pontual interrompa silenciosamente as próximas checagens.
+- `obterAbaLogs()`: aba "Logs" criada automaticamente se não existir, em vez de o registro falhar.
+
+### Decidido
+- Alertas críticos são enviados para `NUMERO_PROPRIETARIO` (mesma propriedade usada nos lembretes), evitando criar uma nova configuração só para isso.
+- Checagem de saúde do sistema (`verificarSaudeSistema`) precisa de um gatilho de tempo próprio (ex: 1x/dia), configurado manualmente — mesmo padrão do gatilho de 15 em 15 min da Etapa 6.
+
+---
+
 ## [0.7.0] - 2026-08-03
 ### Adicionado
 - Relatórios (diário, semanal, mensal): resumo de agenda, tarefas e financeiro do período.

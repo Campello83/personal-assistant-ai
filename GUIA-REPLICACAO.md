@@ -491,3 +491,39 @@ Etapa 8 - Dashboard e indicadores (painel visual via Web App)
 ✅ Confirmado — relatório sob demanda (diário/semanal/mensal) chegando corretamente por WhatsApp, com dados coerentes de agenda, tarefas e financeiro.
 
 ✅ **Critério de conclusão da Etapa 7:** relatório sob demanda (diário/semanal/mensal) chegando corretamente por WhatsApp, com dados coerentes de agenda, tarefas e financeiro.
+
+---
+
+## Etapa 9 — Tratamento de Erros e Logs
+
+**Objetivo desta etapa:** garantir que nenhuma falha do sistema passe despercebida — nem para o usuário (que recebe uma mensagem de erro amigável em vez de silêncio), nem para o dono do sistema (que é avisado por WhatsApp em falhas críticas).
+
+**Decisões desta etapa:**
+- Erros por intent (agendar, criar tarefa, financeiro, relatório) são isolados: uma falha em um deles não derruba o processamento do restante da mensagem.
+- Alertas críticos vão para `NUMERO_PROPRIETARIO` (mesma propriedade já usada pelos lembretes), sem criar uma nova configuração.
+- Checagem de saúde das integrações (Gemini, WhatsApp, Calendar, Tasks) roda por gatilho de tempo separado, não a cada 15 min junto dos lembretes — health check é mais pesado e não precisa dessa frequência.
+
+### Resumo da implementação
+
+- `Logs.gs`: `obterAbaLogs()` cria a aba "Logs" automaticamente se não existir; `registrarErro(origem, erro, contexto, numero)` grava um log com status `CRITICO` e avisa o dono do sistema por WhatsApp.
+- `Code.gs`: `executarComSeguranca(origemLog, numero, mensagemFalhaUsuario, funcao)` envolve cada intent — em caso de erro, o usuário recebe uma mensagem amigável e o erro completo é registrado e notificado.
+- `Lembretes.gs`: `verificarLembretes()` (gatilho automático a cada 15 min) agora isola cada sub-verificação (agenda, tarefas, relatórios automáticos) em seu próprio `try/catch`, evitando que uma falha pontual pare as próximas execuções silenciosamente.
+- `HealthCheck.gs` (novo arquivo): `verificarSaudeSistema()` testa Gemini, WhatsApp, Calendar e Tasks; registra cada resultado na aba Logs (`HEALTHCHECK`) e, se houver falha, envia um resumo por WhatsApp ao dono do sistema.
+
+### 9.1 — Criar o gatilho de checagem de saúde
+
+1. No editor do Apps Script → ícone de **relógio (Gatilhos)** no menu lateral → **"+ Adicionar gatilho"**.
+2. Preencha:
+   - **Função a ser executada**: `verificarSaudeSistema`
+   - **Fonte do evento**: `Baseado em tempo`
+   - **Tipo de gatilho de tempo**: `Timer diário`
+   - **Horário**: escolha uma janela tranquila, ex: `7h às 8h da manhã`.
+3. **Salvar**.
+
+### 9.2 — Teste funcional
+
+- Envie uma mensagem normal (ex: "cria uma tarefa para amanhã") e confirme que continua funcionando normalmente.
+- Simule uma falha controlada (opcional, mais técnico): trocar temporariamente uma propriedade do script (ex: `WHATSAPP_PHONE_NUMBER_ID`) por um valor inválido, enviar uma mensagem que dependa dela, confirmar que chega um aviso de erro, e depois desfazer a alteração.
+- Rode `verificarSaudeSistema` manualmente pelo editor do Apps Script (selecionar a função → Executar) e confirme que aparecem 4 linhas novas na aba Logs (`HEALTHCHECK`), uma por serviço.
+
+✅ **Critério de conclusão da Etapa 9:** erro em qualquer intent gera aviso amigável ao usuário + registro completo na aba Logs; `verificarSaudeSistema` roda automaticamente todo dia e avisa o dono do sistema caso alguma integração esteja fora do ar.

@@ -88,9 +88,22 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (erro) {
-    registrarLog("ERRO", "doPost", erro.toString(), "ERRO");
+    registrarErro("doPost", erro, "Falha nao tratada no recebimento da mensagem");
     return ContentService.createTextOutput(JSON.stringify({ status: "erro" }))
       .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Executa a acao de um intent com protecao: se algo falhar (API fora do ar,
+// cota estourada, dado invalido etc.), o usuario recebe um aviso amigavel
+// pelo WhatsApp, o erro completo vai para a aba Logs e o dono do sistema
+// e notificado — sem derrubar o processamento do restante do webhook.
+function executarComSeguranca(origemLog, numero, mensagemFalhaUsuario, funcao) {
+  try {
+    funcao();
+  } catch (erro) {
+    registrarErro(origemLog, erro, "Numero: " + numero);
+    enviarMensagemWhatsApp(numero, mensagemFalhaUsuario);
   }
 }
 
@@ -99,49 +112,61 @@ function processarIntent(resultado, numero) {
   const dados = resultado.dados;
 
   if (intent === "agendar_compromisso") {
-    const evento = criarCompromisso(dados);
-    let mensagem = "Compromisso agendado:\n" + evento.titulo + "\n" + evento.inicio + " as " + evento.fim;
-    if (evento.linkReuniao) mensagem += "\nLink da reuniao: " + evento.linkReuniao;
-    enviarMensagemWhatsApp(numero, mensagem);
-    registrarLog("AGENDA", numero, JSON.stringify(evento), "OK");
+    executarComSeguranca("AGENDA", numero, "Nao consegui agendar o compromisso agora. Ja registrei o erro, tente novamente em instantes.", function () {
+      const evento = criarCompromisso(dados);
+      let mensagem = "Compromisso agendado:\n" + evento.titulo + "\n" + evento.inicio + " as " + evento.fim;
+      if (evento.linkReuniao) mensagem += "\nLink da reuniao: " + evento.linkReuniao;
+      enviarMensagemWhatsApp(numero, mensagem);
+      registrarLog("AGENDA", numero, JSON.stringify(evento), "OK");
+    });
 
   } else if (intent === "criar_tarefa") {
-    const tarefa = criarTarefa(dados);
-    let mensagem = "Tarefa criada:\n" + tarefa.titulo + "\nPrazo: " + tarefa.prazo;
-    if (tarefa.hora) mensagem += " as " + tarefa.hora;
-    enviarMensagemWhatsApp(numero, mensagem);
-    registrarLog("TAREFA", numero, JSON.stringify(tarefa), "OK");
+    executarComSeguranca("TAREFA", numero, "Nao consegui criar a tarefa agora. Ja registrei o erro, tente novamente em instantes.", function () {
+      const tarefa = criarTarefa(dados);
+      let mensagem = "Tarefa criada:\n" + tarefa.titulo + "\nPrazo: " + tarefa.prazo;
+      if (tarefa.hora) mensagem += " as " + tarefa.hora;
+      enviarMensagemWhatsApp(numero, mensagem);
+      registrarLog("TAREFA", numero, JSON.stringify(tarefa), "OK");
+    });
 
   } else if (intent === "registrar_gasto") {
-    const gasto = registrarMovimentacao("Gasto", dados);
-    enviarMensagemWhatsApp(numero, "Gasto registrado:\n" + gasto.descricao + "\nR$ " + gasto.valor.toFixed(2) + " (" + gasto.categoria + ")");
-    registrarLog("FINANCEIRO", numero, JSON.stringify(gasto), "OK");
+    executarComSeguranca("FINANCEIRO", numero, "Nao consegui registrar o gasto agora. Ja registrei o erro, tente novamente em instantes.", function () {
+      const gasto = registrarMovimentacao("Gasto", dados);
+      enviarMensagemWhatsApp(numero, "Gasto registrado:\n" + gasto.descricao + "\nR$ " + gasto.valor.toFixed(2) + " (" + gasto.categoria + ")");
+      registrarLog("FINANCEIRO", numero, JSON.stringify(gasto), "OK");
+    });
 
   } else if (intent === "registrar_entrada") {
-    const entrada = registrarMovimentacao("Entrada", dados);
-    enviarMensagemWhatsApp(numero, "Entrada registrada:\n" + entrada.descricao + "\nR$ " + entrada.valor.toFixed(2) + " (" + entrada.categoria + ")");
-    registrarLog("FINANCEIRO", numero, JSON.stringify(entrada), "OK");
+    executarComSeguranca("FINANCEIRO", numero, "Nao consegui registrar a entrada agora. Ja registrei o erro, tente novamente em instantes.", function () {
+      const entrada = registrarMovimentacao("Entrada", dados);
+      enviarMensagemWhatsApp(numero, "Entrada registrada:\n" + entrada.descricao + "\nR$ " + entrada.valor.toFixed(2) + " (" + entrada.categoria + ")");
+      registrarLog("FINANCEIRO", numero, JSON.stringify(entrada), "OK");
+    });
 
   } else if (intent === "controle_financeiro") {
-    const resumo = consultarFinanceiro(dados);
-    let mensagem = "Resumo financeiro (" + resumo.periodo + "):\n" +
-      "Entradas: R$ " + resumo.totalEntradas.toFixed(2) + "\n" +
-      "Gastos: R$ " + resumo.totalGastos.toFixed(2) + "\n" +
-      "Saldo: R$ " + resumo.saldo.toFixed(2);
-    const categorias = Object.keys(resumo.gastosPorCategoria);
-    if (categorias.length > 0) {
-      mensagem += "\n\nGastos por categoria:";
-      categorias.forEach(function (cat) {
-        mensagem += "\n- " + cat + ": R$ " + resumo.gastosPorCategoria[cat].toFixed(2);
-      });
-    }
-    enviarMensagemWhatsApp(numero, mensagem);
-    registrarLog("FINANCEIRO", numero, JSON.stringify(resumo), "OK");
+    executarComSeguranca("FINANCEIRO", numero, "Nao consegui consultar o financeiro agora. Ja registrei o erro, tente novamente em instantes.", function () {
+      const resumo = consultarFinanceiro(dados);
+      let mensagem = "Resumo financeiro (" + resumo.periodo + "):\n" +
+        "Entradas: R$ " + resumo.totalEntradas.toFixed(2) + "\n" +
+        "Gastos: R$ " + resumo.totalGastos.toFixed(2) + "\n" +
+        "Saldo: R$ " + resumo.saldo.toFixed(2);
+      const categorias = Object.keys(resumo.gastosPorCategoria);
+      if (categorias.length > 0) {
+        mensagem += "\n\nGastos por categoria:";
+        categorias.forEach(function (cat) {
+          mensagem += "\n- " + cat + ": R$ " + resumo.gastosPorCategoria[cat].toFixed(2);
+        });
+      }
+      enviarMensagemWhatsApp(numero, mensagem);
+      registrarLog("FINANCEIRO", numero, JSON.stringify(resumo), "OK");
+    });
 
   } else if (intent === "gerar_relatorio") {
-    const relatorio = gerarRelatorio(dados);
-    enviarMensagemWhatsApp(numero, formatarRelatorio(relatorio));
-    registrarLog("RELATORIO", numero, "Relatorio " + relatorio.periodo + " gerado sob demanda", "OK");
+    executarComSeguranca("RELATORIO", numero, "Nao consegui gerar o relatorio agora. Ja registrei o erro, tente novamente em instantes.", function () {
+      const relatorio = gerarRelatorio(dados);
+      enviarMensagemWhatsApp(numero, formatarRelatorio(relatorio));
+      registrarLog("RELATORIO", numero, "Relatorio " + relatorio.periodo + " gerado sob demanda", "OK");
+    });
 
   } else {
     enviarMensagemWhatsApp(numero, "Recebi sua mensagem, mas essa funcao ainda esta em construcao.");
