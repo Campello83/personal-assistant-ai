@@ -3,6 +3,10 @@
 const VERIFY_TOKEN = "personalassistantai2026";
 
 function doGet(e) {
+  if (e.parameter["painel"]) {
+    return exibirDashboard(e);
+  }
+
   const mode = e.parameter["hub.mode"];
   const token = e.parameter["hub.verify_token"];
   const challenge = e.parameter["hub.challenge"];

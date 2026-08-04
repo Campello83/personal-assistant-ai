@@ -2,7 +2,7 @@
 
 Assistente pessoal de IA, acionado via WhatsApp (texto ou áudio), que organiza agenda, tarefas, finanças e anotações de forma automática — 100% online e 100% gratuito (dentro dos limites dos planos free).
 
-> **Status do projeto:** 🟢 Etapa 7 — Relatórios (v0.7.0, concluída)
+> **Status do projeto:** 🟢 Etapa 8 — Dashboard e Indicadores (v0.8.0, concluída)
 > **Repositório:** https://github.com/campello83/personal-assistant-ai *(nome sugerido — ajustar se já existir outro)*
 
 ---
@@ -90,6 +90,7 @@ Agenda.gs  Tasks.gs   Financeiro.gs   Anotacoes.gs   Relatorios.gs   Lembretes.g
 | `Anotacoes.gs` | Registro de anotações formatadas (documentação) |
 | `Relatorios.gs` | Geração de relatórios diários, semanais e mensais |
 | `Lembretes.gs` | Envio de lembretes e cobranças automáticas |
+| `Dashboard.gs` / `Dashboard.html` | Painel visual (Web App) com indicadores principais |
 | `Config.gs` | Configurações gerais e memória do assistente |
 | `Logs.gs` | Registro completo (full log) de cada movimentação do sistema |
 | `HealthCheck.gs` | Checagem periódica de saúde do sistema (APIs, cotas, falhas) |
@@ -110,7 +111,7 @@ Cada cenário abaixo é uma **etapa** do projeto. Só avançamos para a próxima
 | 5 | Controle Financeiro | Registro de gastos e entradas na planilha | 🟢 Concluído |
 | 6 | Lembretes e cobranças | Envio automático de lembretes via WhatsApp | 🟢 Concluído |
 | 7 | Relatórios | Relatórios diário, semanal e mensal | 🟢 Concluída |
-| 8 | Dashboard e indicadores | Painel visual com indicadores principais | ⚪ Não iniciado |
+| 8 | Dashboard e indicadores | Painel visual com indicadores principais | 🟢 Concluído |
 | 9 | Tratamento de erros e logs | Logs.gs registrando cada movimentação | ⚪ Não iniciado |
 | 10 | Configurações e memória | Config.gs com preferências e memória do assistente | ⚪ Não iniciado |
 | 11 | Documento final (PDF) | Passo a passo para replicar a configuração do zero | ⚪ Não iniciado |
@@ -178,3 +179,4 @@ Ao final do projeto será gerado um **PDF com passo a passo minucioso**, escrito
 | 2026-08-02 | Etapa 6 | Lembretes automáticos de agenda e tarefas (em teste final) |
 | 2026-08-02 | — | Automação de deploy: GitHub Actions + clasp, e assistente com push direto ao repositório |
 | 2026-08-03 | Etapa 7 | Relatórios (diário/semanal/mensal) — teste funcional OK, concluída (v0.7.0) |
+| 2026-08-04 | Etapa 8 | Dashboard e indicadores — painel visual (Web App), concluída (v0.8.0) |

@@ -435,6 +435,42 @@ Nova versão da implantação → enviar mensagem tipo "Cria uma tarefa para rev
 
 ---
 
+## Etapa 8 — Dashboard e Indicadores
+
+**Objetivo:** um painel visual (link único) mostrando os indicadores principais: saldo financeiro, gastos por categoria, tarefas concluídas/pendentes e compromissos do período.
+
+**Decisões desta etapa:**
+- Acesso via a mesma URL do Web App do projeto, acrescentando `?painel=1` (ex: `https://script.google.com/macros/s/SEU_ID/exec?painel=1`).
+- Sem senha/login nesta etapa — é um link único (quem tiver o link acessa). **Não compartilhe esse link publicamente**, pois expõe dados financeiros.
+- Reaproveita `gerarRelatorio()` (Etapa 7) como fonte dos dados — nenhuma aba nova na planilha foi necessária.
+
+### Resumo da implementação
+
+- `Dashboard.gs`: função `exibirDashboard(e)`, lê o parâmetro `periodo` (`diario`/`semanal`/`mensal`, padrão `diario`), monta os dados com `gerarRelatorio()` e renderiza o template `Dashboard.html`.
+- `Dashboard.html`: página com cartões de indicadores (saldo, entradas, gastos, tarefas, compromissos), gráfico de pizza de gastos por categoria (biblioteca **Google Charts**, carregada via `https://www.gstatic.com/charts/loader.js`) e lista de compromissos do período. Botões no topo trocam o período (recarregam a página com `?periodo=...`).
+- `Code.gs`: `doGet` passou a checar o parâmetro `painel` **antes** da lógica de verificação do webhook da Meta — se presente, retorna o painel; caso contrário, segue o fluxo normal (verificação do webhook).
+- `.claspignore`: liberado o envio de arquivos `.html` (antes só `.gs` e `appsscript.json` eram sincronizados).
+
+### 8.1 — Reimplantar
+
+Como o `doGet` mudou, é necessária uma **nova versão da implantação** (mesmo processo da Etapa 2.7): **Implantar → Gerenciar implantações → editar (lápis) → "Nova versão"** → descrição:
+
+```
+Etapa 8 - Dashboard e indicadores (painel visual via Web App)
+```
+
+→ **Implantar**. A URL do Web App não muda.
+
+### 8.2 — Teste funcional
+
+1. Abra no navegador: `SUA_URL_DO_WEB_APP?painel=1`
+2. Confira se aparecem os cartões (saldo, entradas, gastos, tarefas, compromissos) e o gráfico de gastos por categoria.
+3. Clique nos filtros "Hoje" / "7 dias" / "30 dias" e confirme que os números mudam.
+
+✅ **Critério de conclusão da Etapa 8:** painel abre pelo link, mostra os indicadores corretos e os filtros de período funcionam.
+
+---
+
 ## Etapa 7 — Relatórios (diário, semanal, mensal)
 
 **Objetivo:** gerar um resumo (agenda + tarefas + financeiro) sob demanda, pelo WhatsApp, e também de forma automática em horários fixos.

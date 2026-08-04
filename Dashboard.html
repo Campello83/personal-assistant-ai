@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 16px; background: #f5f6f8; color: #222; }
+    h1 { font-size: 20px; margin-bottom: 4px; }
+    .subtitulo { color: #666; font-size: 13px; margin-bottom: 16px; }
+    .filtros a {
+      display: inline-block; padding: 6px 14px; margin-right: 8px; border-radius: 16px;
+      background: #e8eaed; color: #333; text-decoration: none; font-size: 13px;
+    }
+    .filtros a.ativo { background: #1a73e8; color: #fff; }
+    .cartoes { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+    .cartao {
+      background: #fff; border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 140px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .cartao .rotulo { font-size: 12px; color: #777; }
+    .cartao .valor { font-size: 22px; font-weight: bold; margin-top: 4px; }
+    .verde { color: #1e8e3e; }
+    .vermelho { color: #d93025; }
+    .graficos { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+    .grafico-caixa {
+      background: #fff; border-radius: 10px; padding: 12px; flex: 1; min-width: 280px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .lista { font-size: 13px; margin: 0; padding-left: 18px; }
+    .vazio { color: #999; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <h1>📊 Personal Assistant AI</h1>
+  <div class="subtitulo">Painel de indicadores — <?= relatorio.rotuloPeriodo ?></div>
+
+  <div class="filtros">
+    <a href="?painel=1&periodo=diario" class="<?= periodo === 'diario' ? 'ativo' : '' ?>">Hoje</a>
+    <a href="?painel=1&periodo=semanal" class="<?= periodo === 'semanal' ? 'ativo' : '' ?>">7 dias</a>
+    <a href="?painel=1&periodo=mensal" class="<?= periodo === 'mensal' ? 'ativo' : '' ?>">30 dias</a>
+  </div>
+
+  <div class="cartoes">
+    <div class="cartao">
+      <div class="rotulo">Saldo</div>
+      <div class="valor <?= relatorio.financeiro.saldo >= 0 ? 'verde' : 'vermelho' ?>">
+        R$ <?= relatorio.financeiro.saldo.toFixed(2) ?>
+      </div>
+    </div>
+    <div class="cartao">
+      <div class="rotulo">Entradas</div>
+      <div class="valor verde">R$ <?= relatorio.financeiro.totalEntradas.toFixed(2) ?></div>
+    </div>
+    <div class="cartao">
+      <div class="rotulo">Gastos</div>
+      <div class="valor vermelho">R$ <?= relatorio.financeiro.totalGastos.toFixed(2) ?></div>
+    </div>
+    <div class="cartao">
+      <div class="rotulo">Tarefas concluídas</div>
+      <div class="valor"><?= relatorio.tarefas.concluidasNoPeriodo ?></div>
+    </div>
+    <div class="cartao">
+      <div class="rotulo">Tarefas pendentes</div>
+      <div class="valor"><?= relatorio.tarefas.pendentes ?></div>
+    </div>
+    <div class="cartao">
+      <div class="rotulo">Compromissos</div>
+      <div class="valor"><?= relatorio.eventos.length ?></div>
+    </div>
+  </div>
+
+  <div class="graficos">
+    <div class="grafico-caixa">
+      <div id="grafico_categorias" style="width: 100%; height: 260px;"></div>
+    </div>
+    <div class="grafico-caixa">
+      <strong style="font-size:13px;">Compromissos do período</strong>
+      <? if (relatorio.eventos.length > 0) { ?>
+        <ul class="lista">
+          <? for (var i = 0; i < relatorio.eventos.length; i++) { ?>
+            <li><?= relatorio.eventos[i] ?></li>
+          <? } ?>
+        </ul>
+      <? } else { ?>
+        <p class="vazio">Nenhum compromisso no período.</p>
+      <? } ?>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    var dados = <?!= dadosJson ?>;
+
+    google.charts.load("current", { packages: ["corechart"] });
+    google.charts.setOnLoadCallback(desenharGraficoCategorias);
+
+    function desenharGraficoCategorias() {
+      var categorias = dados.financeiro.gastosPorCategoria || {};
+      var linhas = [["Categoria", "Gasto"]];
+      Object.keys(categorias).forEach(function (cat) {
+        linhas.push([cat, categorias[cat]]);
+      });
+
+      var elemento = document.getElementById("grafico_categorias");
+      if (linhas.length === 1) {
+        elemento.innerHTML = '<p style="color:#999;font-size:13px;">Sem gastos no período.</p>';
+        return;
+      }
+
+      var tabela = google.visualization.arrayToDataTable(linhas);
+      var opcoes = { title: "Gastos por categoria", pieHole: 0.4, chartArea: { width: "90%", height: "80%" } };
+      var grafico = new google.visualization.PieChart(elemento);
+      grafico.draw(tabela, opcoes);
+    }
+  </script>
+</body>
+</html>

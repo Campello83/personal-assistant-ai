@@ -26,6 +26,19 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [0.8.0] - 2026-08-04
+### Adicionado
+- Painel visual (dashboard) via Web App do Apps Script, acessado pela mesma URL do webhook acrescentando `?painel=1` (link único, sem senha).
+- Cartões de indicadores: saldo, entradas, gastos, tarefas concluídas/pendentes e total de compromissos no período.
+- Gráfico de pizza de gastos por categoria (Google Charts) e lista de compromissos do período.
+- Filtro de período (hoje / 7 dias / 30 dias) direto na página, reaproveitando `gerarRelatorio()` (Etapa 7).
+- Arquivos `Dashboard.gs` e `Dashboard.html`.
+
+### Decidido
+- Sem autenticação por senha nesta etapa — o link do painel não deve ser compartilhado publicamente. Reavaliar proteção por senha/token se o projeto sair da fase de uso pessoal.
+
+---
+
 ## [0.5.0] - 2026-08-02
 ### Adicionado
 - Controle financeiro: aba dedicada "Financeiro" na planilha, registrando gastos e entradas.
