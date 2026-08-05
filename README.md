@@ -1,9 +1,9 @@
 # 🤖 Personal Assistant AI
 
-Assistente pessoal de IA, acionado via WhatsApp (texto ou áudio), que organiza agenda, tarefas, finanças e anotações de forma automática — 100% online e 100% gratuito (dentro dos limites dos planos free).
+Assistente pessoal de IA, acionado via WhatsApp (texto ou áudio), que organiza agenda, tarefas e finanças de forma automática — 100% online e 100% gratuito (dentro dos limites dos planos free).
 
-> **Status do projeto:** 🟢 Etapa 11 — Documento Final (PDF) (concluída) — 🏁 Roadmap completo
-> **Repositório:** https://github.com/campello83/personal-assistant-ai *(nome sugerido — ajustar se já existir outro)*
+> **Status do projeto:** 🏁 v1.0.0 — Roadmap completo (Etapas 0 a 11)
+> **Repositório:** https://github.com/campello83/personal-assistant-ai
 
 ---
 
@@ -14,7 +14,6 @@ O **Personal Assistant AI** recebe mensagens do usuário pelo **WhatsApp** (text
 - 📅 Agendar compromissos
 - ✅ Criar tarefas
 - 💸 Registrar gastos
-- 📝 Registrar anotações formatadas (estilo documentação)
 - 📊 Gerar relatórios (diário, semanal, mensal)
 - 💰 Controlar o financeiro
 - ⏰ Lembrar de tarefas e compromissos pendentes
@@ -63,7 +62,7 @@ Google Apps Script (Webhook / doPost)
         │
    ┌────┼─────────┬─────────────┬─────────────┬──────────────┐
    ▼    ▼         ▼             ▼             ▼              ▼
-Agenda.gs  Tasks.gs   Financeiro.gs   Anotacoes.gs   Relatorios.gs   Lembretes.gs
+Agenda.gs  Tasks.gs   Financeiro.gs   Relatorios.gs   Dashboard.gs   Lembretes.gs
    │          │            │               │               │             │
    └──────────┴────────────┴───────────────┴───────────────┴─────────────┘
                               │
@@ -75,7 +74,7 @@ Agenda.gs  Tasks.gs   Financeiro.gs   Anotacoes.gs   Relatorios.gs   Lembretes.g
                        HealthCheck.gs (checagem de saúde)
 ```
 
-**Por que essa arquitetura é simples:** cada "assunto" (agenda, tarefas, financeiro, anotações, relatórios, lembretes) tem seu próprio arquivo `.gs` isolado. O `Code.gs` só decide para qual arquivo mandar o pedido. Nada de banco de dados externo, nada de servidor próprio — tudo Google Apps Script + Google Sheets.
+**Por que essa arquitetura é simples:** cada "assunto" (agenda, tarefas, financeiro, relatórios, painel, lembretes) tem seu próprio arquivo `.gs` isolado. O `Code.gs` só decide para qual arquivo mandar o pedido. Nada de banco de dados externo, nada de servidor próprio — tudo Google Apps Script + Google Sheets.
 
 ---
 
@@ -87,7 +86,6 @@ Agenda.gs  Tasks.gs   Financeiro.gs   Anotacoes.gs   Relatorios.gs   Lembretes.g
 | `Agenda.gs` | Criação/edição de compromissos no Google Calendar |
 | `Tasks.gs` | Criação/edição de tarefas no Google Tasks |
 | `Financeiro.gs` | Registro de gastos, entradas e controle financeiro |
-| `Anotacoes.gs` | Registro de anotações formatadas (documentação) |
 | `Relatorios.gs` | Geração de relatórios diários, semanais e mensais |
 | `Lembretes.gs` | Envio de lembretes e cobranças automáticas |
 | `Dashboard.gs` / `Painel.html` | Painel visual (Web App) com indicadores principais |

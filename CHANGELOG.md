@@ -10,6 +10,21 @@ Enquanto o projeto estiver em desenvolvimento (antes da v1.0.0), a versão `0.X.
 
 ---
 
+## [1.0.0] - 2026-08-04
+### Adicionado
+- Primeira versão estável: todas as etapas do roadmap (0 a 11) concluídas.
+- `docs/Personal Assistant AI - Guia de Uso com IA.pdf`: documento complementar explicando como replicar o projeto com apoio de um assistente de IA (prompt inicial sugerido, boas práticas de segurança para tokens, limites do que dá para automatizar).
+
+### Alterado
+- `GUIA-REPLICACAO.md` reorganizado em ordem cronológica de configuração (em vez de ordem de desenvolvimento por etapa), com seções novas: pré-requisitos (obrigatórios/opcionais), dicas de uso, decisões de projeto a serem tomadas, troca detalhada para número de WhatsApp real, estrutura de referência, problemas comuns consolidados e glossário.
+- Removidas informações pessoais (usuário do GitHub, link de workspace do Postman) dos documentos voltados à replicação por terceiros (`GUIA-REPLICACAO.md` e PDFs em `docs/`).
+- `README.md`: removida a funcionalidade "registrar anotações" e o arquivo `Anotacoes.gs` da lista de recursos e da estrutura de arquivos — nunca foram implementados (ver "Corrigido" abaixo).
+
+### Corrigido (achado em checkup pré-release)
+- O prompt do Gemini (`Gemini.gs`) ainda lista as intenções `registrar_anotacao` e `lembrete`, mas `Code.gs` nunca implementou o tratamento delas — mensagens desse tipo caem na resposta genérica de "função em construção". Documentado como limitação conhecida da v1.0.0; decisão de implementar de fato ou remover essas intenções do prompt fica em aberto para a próxima versão.
+
+---
+
 ## [0.11.0] - 2026-08-04
 ### Adicionado
 - `docs/Personal Assistant AI - Guia de Replicacao.pdf`: documento final consolidado (Etapa 11), reorganizando todo o conteúdo de `GUIA-REPLICACAO.md` em ordem cronológica de configuração (em vez de ordem de desenvolvimento), escrito para quem não tem conhecimento técnico — cobre contas, credenciais, código, deploy, webhook, gatilhos, teste geral e um apêndice de problemas comuns.
